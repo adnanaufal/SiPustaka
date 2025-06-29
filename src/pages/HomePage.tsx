@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, Users, ShoppingCart, Shield, Plus, Eye, FileText, Heart } from 'lucide-react';
 import { Layout } from '../components/Layout/Layout';
@@ -6,6 +6,7 @@ import { BookCard } from '../components/Books/BookCard';
 import { BookDetailModal } from '../components/Books/BookDetailModal';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { supabase } from '../lib/supabase';
 import type { Database } from '../lib/supabase';
 
@@ -14,6 +15,7 @@ type Book = Database['public']['Tables']['books']['Row'];
 export function HomePage() {
   const { profile } = useAuth();
   const { t } = useLanguage();
+  const { isDark } = useTheme();
   const [newArrivals, setNewArrivals] = useState<Book[]>([]);
   const [selectedBookForDetail, setSelectedBookForDetail] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
@@ -22,6 +24,11 @@ export function HomePage() {
   const [displayedTitle, setDisplayedTitle] = useState('');
   const [displayedSubtitle, setDisplayedSubtitle] = useState('');
   const [showButtons, setShowButtons] = useState(false);
+
+  // Cursor-driven gradient states
+  const [mouseX, setMouseX] = useState(0);
+  const [mouseY, setMouseY] = useState(0);
+  const heroSectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     fetchNewArrivals();
@@ -78,6 +85,44 @@ export function HomePage() {
       clearInterval(titleInterval);
     };
   }, [profile, t]);
+
+  // Handle mouse movement for gradient effect
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    if (heroSectionRef.current) {
+      const rect = heroSectionRef.current.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      setMouseX(x);
+      setMouseY(y);
+    }
+  }, []);
+
+  // Define gradient colors for different themes
+  const gradientColorsLight = [
+    'rgba(59, 130, 246, 0.8)',   // Blue
+    'rgba(147, 197, 253, 0.6)',  // Light Blue
+    'rgba(196, 181, 253, 0.7)',  // Light Purple
+    'rgba(252, 211, 77, 0.5)',   // Light Yellow
+    'rgba(167, 243, 208, 0.6)',  // Light Green
+    'rgba(251, 191, 36, 0.5)',   // Amber
+  ];
+
+  const gradientColorsDark = [
+    'rgba(30, 58, 138, 0.9)',    // Dark Blue
+    'rgba(55, 48, 163, 0.8)',    // Dark Purple
+    'rgba(75, 85, 99, 0.7)',     // Dark Gray
+    'rgba(31, 41, 55, 0.8)',     // Darker Gray
+    'rgba(17, 24, 39, 0.9)',     // Very Dark Gray
+    'rgba(67, 56, 202, 0.7)',    // Indigo
+  ];
+
+  // Create dynamic gradient style
+  const gradientStyle = {
+    background: `radial-gradient(circle at ${mouseX}% ${mouseY}%, ${
+      isDark ? gradientColorsDark.join(', ') : gradientColorsLight.join(', ')
+    })`,
+    transition: 'background 0.3s ease-out',
+  };
 
   const fetchNewArrivals = async () => {
     try {
@@ -203,23 +248,14 @@ export function HomePage() {
   return (
     <Layout>
       <div className="relative">
-        {/* Hero Section */}
-        <section className="relative text-white py-20 overflow-hidden">
-          {/* GIF Background */}
-          <div 
-            className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
-            style={{
-              backgroundImage: 'url(/giphy%20(3).gif)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat'
-            }}
-          >
-            {/* Fallback gradient for loading or if GIF fails */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 opacity-0 transition-opacity duration-300"></div>
-          </div>
-          
-          {/* Enhanced dark overlay for better text readability */}
+        {/* Hero Section with Cursor-Driven Gradient */}
+        <section 
+          ref={heroSectionRef}
+          className="relative text-white py-20 overflow-hidden"
+          style={gradientStyle}
+          onMouseMove={handleMouseMove}
+        >
+          {/* Dark overlay for better text readability */}
           <div className="absolute inset-0 bg-black/70"></div>
           
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
