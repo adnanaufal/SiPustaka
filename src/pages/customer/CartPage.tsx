@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, ShoppingBag, Plus, Minus, Trash2 } from 'lucide-react';
 import { Layout } from '../../components/Layout/Layout';
 import { useCart } from '../../hooks/useCart';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 export function CartPage() {
+  const { t } = useLanguage();
   const { items, loading, totalAmount, updateQuantity, removeFromCart, checkout } = useCart();
 
   const handleCheckout = async () => {
@@ -21,7 +23,7 @@ export function CartPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="text-gray-600 dark:text-gray-400 mt-4">Loading cart...</p>
+            <p className="text-gray-600 dark:text-gray-400 mt-4">{t('cart.loadingCart')}</p>
           </div>
         </div>
       </Layout>
@@ -38,15 +40,15 @@ export function CartPage() {
             className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 mr-6"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span>Back to Books</span>
+            <span>{t('cart.backToBooks')}</span>
           </Link>
           
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Shopping Cart
+              {t('cart.shoppingCart')}
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-1">
-              {items.length} item{items.length !== 1 ? 's' : ''} in your cart
+              {items.length} {t('cart.itemsInCart')}
             </p>
           </div>
         </div>
@@ -55,16 +57,16 @@ export function CartPage() {
           <div className="text-center py-12">
             <ShoppingBag className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-              Your cart is empty
+              {t('cart.cartEmpty')}
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              Start shopping to add items to your cart
+              {t('cart.startShopping')}
             </p>
             <Link
               to="/customer"
               className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
             >
-              Browse Books
+              {t('cart.browseBooks')}
             </Link>
           </div>
         ) : (
@@ -123,7 +125,7 @@ export function CartPage() {
                           className="flex items-center space-x-2 px-3 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors duration-200"
                         >
                           <Trash2 className="w-4 h-4" />
-                          <span>Remove</span>
+                          <span>{t('cart.remove')}</span>
                         </button>
                       </div>
                     </div>
@@ -136,7 +138,7 @@ export function CartPage() {
             <div className="lg:col-span-1">
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-8">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                  Order Summary
+                  {t('cart.orderSummary')}
                 </h3>
 
                 <div className="space-y-3 mb-6">
@@ -154,7 +156,7 @@ export function CartPage() {
 
                 <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mb-6">
                   <div className="flex justify-between text-xl font-bold text-gray-900 dark:text-white">
-                    <span>Total</span>
+                    <span>{t('cart.total')}</span>
                     <span>${totalAmount.toFixed(2)}</span>
                   </div>
                 </div>
@@ -163,7 +165,7 @@ export function CartPage() {
                   onClick={handleCheckout}
                   className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-semibold transition-colors duration-200"
                 >
-                  Checkout
+                  {t('cart.checkout')}
                 </button>
               </div>
             </div>

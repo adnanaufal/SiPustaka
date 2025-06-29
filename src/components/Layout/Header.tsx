@@ -1,16 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, ShoppingCart, Sun, Moon, LogOut, User, Settings } from 'lucide-react';
+import { BookOpen, ShoppingCart, Sun, Moon, LogOut, User, Settings, Globe } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { useCart } from '../../hooks/useCart';
 import toast from 'react-hot-toast';
 
 export function Header() {
   const { user, profile, signOut } = useAuth();
   const { isDark, toggleTheme } = useTheme();
+  const { language, setLanguage, t } = useLanguage();
   const { totalItems } = useCart();
   const navigate = useNavigate();
+  const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -38,6 +41,22 @@ export function Header() {
     }
   };
 
+  const toggleLanguage = () => {
+    const newLanguage = language === 'en' ? 'id' : 'en';
+    setLanguage(newLanguage);
+    setShowLanguageDropdown(false);
+  };
+
+  const getFlagUrl = (lang: 'en' | 'id') => {
+    return lang === 'en' 
+      ? 'https://flagcdn.com/w20/gb.svg'
+      : 'https://flagcdn.com/w20/id.svg';
+  };
+
+  const getLanguageName = (lang: 'en' | 'id') => {
+    return lang === 'en' ? 'English' : 'Bahasa Indonesia';
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -54,6 +73,62 @@ export function Header() {
 
           {/* Navigation */}
           <div className="flex items-center space-x-4">
+            {/* Language Switcher */}
+            <div className="relative">
+              <button
+                onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
+                className="flex items-center space-x-2 p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
+                title={`Switch to ${language === 'en' ? 'Bahasa Indonesia' : 'English'}`}
+              >
+                <Globe className="w-5 h-5" />
+                <img 
+                  src={getFlagUrl(language)} 
+                  alt={getLanguageName(language)}
+                  className="w-5 h-3 object-cover rounded-sm"
+                />
+              </button>
+
+              {/* Language Dropdown */}
+              {showLanguageDropdown && (
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50">
+                  <button
+                    onClick={() => {
+                      setLanguage('en');
+                      setShowLanguageDropdown(false);
+                    }}
+                    className={`w-full flex items-center space-x-3 px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 ${
+                      language === 'en' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
+                    }`}
+                  >
+                    <img 
+                      src={getFlagUrl('en')} 
+                      alt="English"
+                      className="w-5 h-3 object-cover rounded-sm"
+                    />
+                    <span>English</span>
+                    {language === 'en' && <span className="ml-auto text-blue-600 dark:text-blue-400">✓</span>}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setLanguage('id');
+                      setShowLanguageDropdown(false);
+                    }}
+                    className={`w-full flex items-center space-x-3 px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 ${
+                      language === 'id' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
+                    }`}
+                  >
+                    <img 
+                      src={getFlagUrl('id')} 
+                      alt="Bahasa Indonesia"
+                      className="w-5 h-3 object-cover rounded-sm"
+                    />
+                    <span>Bahasa Indonesia</span>
+                    {language === 'id' && <span className="ml-auto text-blue-600 dark:text-blue-400">✓</span>}
+                  </button>
+                </div>
+              )}
+            </div>
+
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
@@ -85,7 +160,7 @@ export function Header() {
                   className="flex items-center space-x-2 px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
                 >
                   <User className="w-4 h-4" />
-                  <span className="hidden sm:inline">Dashboard</span>
+                  <span className="hidden sm:inline">{t('header.dashboard')}</span>
                 </Link>
 
                 {/* Settings */}
@@ -104,7 +179,7 @@ export function Header() {
                   className="flex items-center space-x-2 px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
                 >
                   <LogOut className="w-4 h-4" />
-                  <span className="hidden sm:inline">Sign Out</span>
+                  <span className="hidden sm:inline">{t('header.signOut')}</span>
                 </button>
               </>
             ) : (
@@ -113,19 +188,27 @@ export function Header() {
                   to="/auth/login"
                   className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
                 >
-                  Sign In
+                  {t('header.signIn')}
                 </Link>
                 <Link
                   to="/auth/signup"
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
                 >
-                  Sign Up
+                  {t('header.signUp')}
                 </Link>
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Overlay to close dropdown when clicking outside */}
+      {showLanguageDropdown && (
+        <div 
+          className="fixed inset-0 z-40" 
+          onClick={() => setShowLanguageDropdown(false)}
+        />
+      )}
     </header>
   );
 }

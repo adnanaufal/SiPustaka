@@ -5,6 +5,7 @@ import { Layout } from '../components/Layout/Layout';
 import { BookCard } from '../components/Books/BookCard';
 import { BookDetailModal } from '../components/Books/BookDetailModal';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { supabase } from '../lib/supabase';
 import type { Database } from '../lib/supabase';
 
@@ -12,6 +13,7 @@ type Book = Database['public']['Tables']['books']['Row'];
 
 export function HomePage() {
   const { profile } = useAuth();
+  const { t } = useLanguage();
   const [newArrivals, setNewArrivals] = useState<Book[]>([]);
   const [selectedBookForDetail, setSelectedBookForDetail] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
@@ -54,24 +56,23 @@ export function HomePage() {
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                {profile ? `Welcome ${profile.full_name} to SiPustaka` : 'Welcome to SiPustaka'}
+                {profile ? t('home.welcomeUser', { name: profile.full_name }) : t('home.welcome')}
               </h1>
               <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto">
-                Your comprehensive bookstore management system with role-based access,
-                inventory tracking, and seamless shopping experience.
+                {t('home.subtitle')}
               </p>
               <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
                 <Link
                   to="/auth/signup"
                   className="inline-flex items-center px-8 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors duration-200"
                 >
-                  Get Started
+                  {t('home.getStarted')}
                 </Link>
                 <Link
                   to="/auth/login"
                   className="inline-flex items-center px-8 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-blue-600 transition-colors duration-200"
                 >
-                  Sign In
+                  {t('home.signIn')}
                 </Link>
               </div>
             </div>
@@ -83,17 +84,17 @@ export function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                New Arrivals
+                {t('home.newArrivals')}
               </h2>
               <p className="text-xl text-gray-600 dark:text-gray-400">
-                Discover the latest books added to our collection
+                {t('home.newArrivalsSubtitle')}
               </p>
             </div>
 
             {loading ? (
               <div className="text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                <p className="text-gray-600 dark:text-gray-400 mt-4">Loading new arrivals...</p>
+                <p className="text-gray-600 dark:text-gray-400 mt-4">{t('home.loadingNewArrivals')}</p>
               </div>
             ) : newArrivals.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -109,10 +110,10 @@ export function HomePage() {
               <div className="text-center py-12">
                 <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                  No books available yet
+                  {t('home.noBooksAvailable')}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Check back later for new arrivals
+                  {t('home.checkBackLater')}
                 </p>
               </div>
             )}
@@ -124,10 +125,10 @@ export function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                Access Your Dashboard
+                {t('home.accessDashboard')}
               </h2>
               <p className="text-xl text-gray-600 dark:text-gray-400">
-                Choose your role to access the appropriate features
+                {t('home.chooseRole')}
               </p>
             </div>
 
@@ -138,16 +139,16 @@ export function HomePage() {
                   <Shield className="w-8 h-8 text-red-600 dark:text-red-400" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                  Admin
+                  {t('home.admin')}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  Full system access - manage books, users, transactions, and view comprehensive reports.
+                  {t('home.adminDesc')}
                 </p>
                 <Link
                   to="/auth/login?role=admin"
                   className="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
                 >
-                  Admin Login
+                  {t('home.adminLogin')}
                 </Link>
               </div>
 
@@ -157,16 +158,16 @@ export function HomePage() {
                   <Users className="w-8 h-8 text-green-600 dark:text-green-400" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                  Cashier
+                  {t('home.cashier')}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  Process transactions, manage stock, and assist customers with their purchases.
+                  {t('home.cashierDesc')}
                 </p>
                 <Link
                   to="/auth/login?role=cashier"
                   className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
                 >
-                  Cashier Login
+                  {t('home.cashierLogin')}
                 </Link>
               </div>
 
@@ -176,16 +177,16 @@ export function HomePage() {
                   <ShoppingCart className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-                  Customer
+                  {t('home.customer')}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  Browse books, add to cart, make purchases, and track your order history.
+                  {t('home.customerDesc')}
                 </p>
                 <Link
                   to="/auth/login"
                   className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
                 >
-                  Customer Login
+                  {t('home.customerLogin')}
                 </Link>
               </div>
             </div>
@@ -197,10 +198,10 @@ export function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                Powerful Features
+                {t('home.powerfulFeatures')}
               </h2>
               <p className="text-xl text-gray-600 dark:text-gray-400">
-                Everything you need for a complete bookstore management system
+                {t('home.featuresSubtitle')}
               </p>
             </div>
 
@@ -210,10 +211,10 @@ export function HomePage() {
                   <BookOpen className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Book Management
+                  {t('home.bookManagement')}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Complete CRUD operations for books with cover images and detailed information.
+                  {t('home.bookManagementDesc')}
                 </p>
               </div>
 
@@ -222,10 +223,10 @@ export function HomePage() {
                   <ShoppingCart className="w-6 h-6 text-green-600 dark:text-green-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Shopping Cart
+                  {t('home.shoppingCart')}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Real-time cart management with automatic stock updates and reservation.
+                  {t('home.shoppingCartDesc')}
                 </p>
               </div>
 
@@ -234,10 +235,10 @@ export function HomePage() {
                   <Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  User Management
+                  {t('home.userManagement')}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Role-based access control with secure authentication and user profiles.
+                  {t('home.userManagementDesc')}
                 </p>
               </div>
             </div>

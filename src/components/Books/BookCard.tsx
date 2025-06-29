@@ -2,8 +2,9 @@ import React from "react";
 import { ShoppingCart, Edit, Trash2, Package, Eye } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useCart } from "../../hooks/useCart";
+import { useLanguage } from "../../contexts/LanguageContext";
 import type { Database } from "../../lib/supabase";
-import { formatRupiah } from "../../utils/formatters"; // Impor fungsi format Rupiah
+import { formatRupiah } from "../../utils/formatters";
 
 type Book = Database["public"]["Tables"]["books"]["Row"];
 
@@ -24,6 +25,7 @@ export function BookCard({
 }: BookCardProps) {
   const { profile } = useAuth();
   const { addToCart } = useCart();
+  const { t } = useLanguage();
 
   const handleAddToCart = () => {
     addToCart(book.id, 1);
@@ -61,7 +63,7 @@ export function BookCard({
                 : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
             }`}
           >
-            {book.stock} left
+            {book.stock} {t('book.left')}
           </span>
         </div>
       </div>
@@ -100,7 +102,7 @@ export function BookCard({
             <button
               onClick={() => onViewDetail(book)}
               className="flex items-center justify-center p-2 text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
-              title="View Details"
+              title={t('book.viewDetails')}
             >
               <Eye className="w-4 h-4" />
             </button>
@@ -113,7 +115,7 @@ export function BookCard({
               className="flex-1 flex items-center justify-center space-x-2 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
             >
               <ShoppingCart className="w-4 h-4" />
-              <span>Add to Cart</span>
+              <span>{t('book.addToCart')}</span>
             </button>
           )}
 

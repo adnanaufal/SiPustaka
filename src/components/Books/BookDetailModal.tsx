@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, Package } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 import type { Database } from '../../lib/supabase';
 import { formatRupiah } from '../../utils/formatters';
 
@@ -11,13 +12,15 @@ interface BookDetailModalProps {
 }
 
 export function BookDetailModal({ book, onClose }: BookDetailModalProps) {
+  const { t } = useLanguage();
+
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Book Details
+            {t('bookDetail.title')}
           </h2>
           <button
             onClick={onClose}
@@ -43,7 +46,7 @@ export function BookDetailModal({ book, onClose }: BookDetailModalProps) {
                   <div className="text-center">
                     <Package className="w-24 h-24 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
                     <p className="text-lg text-gray-500 dark:text-gray-400">
-                      No Cover Available
+                      {t('bookDetail.noCover')}
                     </p>
                   </div>
                 </div>
@@ -64,7 +67,7 @@ export function BookDetailModal({ book, onClose }: BookDetailModalProps) {
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                   <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                    Category
+                    {t('bookDetail.category')}
                   </h3>
                   <p className="text-lg font-semibold text-gray-900 dark:text-white">
                     {book.category}
@@ -73,7 +76,7 @@ export function BookDetailModal({ book, onClose }: BookDetailModalProps) {
 
                 <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                   <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                    Year
+                    {t('bookDetail.year')}
                   </h3>
                   <p className="text-lg font-semibold text-gray-900 dark:text-white">
                     {book.year}
@@ -82,7 +85,7 @@ export function BookDetailModal({ book, onClose }: BookDetailModalProps) {
 
                 <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                   <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                    Price
+                    {t('bookDetail.price')}
                   </h3>
                   <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                     {formatRupiah(book.price)}
@@ -91,7 +94,7 @@ export function BookDetailModal({ book, onClose }: BookDetailModalProps) {
 
                 <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                   <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                    Stock
+                    {t('bookDetail.stock')}
                   </h3>
                   <p className={`text-lg font-semibold ${
                     book.stock > 10
@@ -100,18 +103,18 @@ export function BookDetailModal({ book, onClose }: BookDetailModalProps) {
                       ? 'text-yellow-600 dark:text-yellow-400'
                       : 'text-red-600 dark:text-red-400'
                   }`}>
-                    {book.stock} available
+                    {book.stock} {t('bookDetail.available')}
                   </p>
                 </div>
               </div>
 
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-                  Description
+                  {t('bookDetail.description')}
                 </h3>
                 <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                   <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                    {book.description || 'No description available for this book.'}
+                    {book.description || t('bookDetail.noDescription')}
                   </p>
                 </div>
               </div>
@@ -126,7 +129,7 @@ export function BookDetailModal({ book, onClose }: BookDetailModalProps) {
               onClick={onClose}
               className="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200"
             >
-              Close
+              {t('bookDetail.close')}
             </button>
           </div>
         </div>

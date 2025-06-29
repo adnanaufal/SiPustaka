@@ -3,12 +3,14 @@ import { Search, Filter, ShoppingCart } from 'lucide-react';
 import { Layout } from '../../components/Layout/Layout';
 import { BookCard } from '../../components/Books/BookCard';
 import { CartSidebar } from '../../components/Cart/CartSidebar';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { supabase } from '../../lib/supabase';
 import type { Database } from '../../lib/supabase';
 
 type Book = Database['public']['Tables']['books']['Row'];
 
 export function CustomerDashboard() {
+  const { t } = useLanguage();
   const [books, setBooks] = useState<Book[]>([]);
   const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
@@ -88,7 +90,7 @@ export function CustomerDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="text-gray-600 dark:text-gray-400 mt-4">Loading books...</p>
+            <p className="text-gray-600 dark:text-gray-400 mt-4">{t('customer.loadingBooks')}</p>
           </div>
         </div>
       </Layout>
@@ -102,10 +104,10 @@ export function CustomerDashboard() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Browse Books
+              {t('customer.browseBooks')}
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">
-              Discover your next favorite read
+              {t('customer.discoverBooks')}
             </p>
           </div>
           
@@ -114,7 +116,7 @@ export function CustomerDashboard() {
             className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
           >
             <ShoppingCart className="w-5 h-5" />
-            <span>View Cart</span>
+            <span>{t('customer.viewCart')}</span>
           </button>
         </div>
 
@@ -126,7 +128,7 @@ export function CustomerDashboard() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search books..."
+                placeholder={t('customer.searchBooks')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -141,7 +143,7 @@ export function CustomerDashboard() {
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">All Categories</option>
+                <option value="">{t('customer.allCategories')}</option>
                 {categories.map((category) => (
                   <option key={category} value={category}>
                     {category}
@@ -156,16 +158,16 @@ export function CustomerDashboard() {
               onChange={(e) => setSortBy(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="title">Sort by Title</option>
-              <option value="author">Sort by Author</option>
-              <option value="price_low">Price: Low to High</option>
-              <option value="price_high">Price: High to Low</option>
-              <option value="year">Newest First</option>
+              <option value="title">{t('customer.sortByTitle')}</option>
+              <option value="author">{t('customer.sortByAuthor')}</option>
+              <option value="price_low">{t('customer.priceLowToHigh')}</option>
+              <option value="price_high">{t('customer.priceHighToLow')}</option>
+              <option value="year">{t('customer.newestFirst')}</option>
             </select>
 
             {/* Results Count */}
             <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-              {filteredBooks.length} book{filteredBooks.length !== 1 ? 's' : ''} found
+              {filteredBooks.length} {t('customer.booksFound')}
             </div>
           </div>
         </div>
@@ -182,10 +184,10 @@ export function CustomerDashboard() {
           <div className="text-center py-12">
             <Search className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-              No books found
+              {t('customer.noBooksFound')}
             </h3>
             <p className="text-gray-600 dark:text-gray-400">
-              Try adjusting your search or filters
+              {t('customer.adjustFilters')}
             </p>
           </div>
         )}
