@@ -204,8 +204,26 @@ export function HomePage() {
     <Layout>
       <div className="relative">
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white py-20">
-          <div className="absolute inset-0 bg-black/20"></div>
+        <section className="relative text-white py-20 overflow-hidden">
+          {/* Video Background */}
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source
+              src="https://videos.pexels.com/video-files/6195547/6195547-uhd_2560_1440_25fps.mp4"
+              type="video/mp4"
+            />
+            {/* Fallback for browsers that don't support video */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800"></div>
+          </video>
+          
+          {/* Dark overlay for text readability */}
+          <div className="absolute inset-0 bg-black/60"></div>
+          
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div id="hero-text" className="text-center">
               <h1 className="text-4xl md:text-6xl font-bold mb-6 min-h-[4rem] md:min-h-[6rem]">
