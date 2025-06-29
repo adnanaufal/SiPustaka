@@ -17,10 +17,67 @@ export function HomePage() {
   const [newArrivals, setNewArrivals] = useState<Book[]>([]);
   const [selectedBookForDetail, setSelectedBookForDetail] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Typewriter effect states
+  const [displayedTitle, setDisplayedTitle] = useState('');
+  const [displayedSubtitle, setDisplayedSubtitle] = useState('');
+  const [showButtons, setShowButtons] = useState(false);
 
   useEffect(() => {
     fetchNewArrivals();
   }, []);
+
+  useEffect(() => {
+    // Typewriter effect for title and subtitle
+    const title = profile ? t('home.welcomeUser', { name: profile.full_name }) : t('home.welcome');
+    const subtitle = t('home.subtitle');
+    
+    // Calculate timing for 5-second total duration
+    const totalDuration = 5000; // 5 seconds
+    const titleDuration = 2500; // 2.5 seconds for title
+    const subtitleDuration = 2000; // 2 seconds for subtitle
+    const buttonDelay = 500; // 0.5 seconds delay before showing buttons
+    
+    const titleSpeed = titleDuration / title.length;
+    const subtitleSpeed = subtitleDuration / subtitle.length;
+
+    // Reset states
+    setDisplayedTitle('');
+    setDisplayedSubtitle('');
+    setShowButtons(false);
+
+    // Title typewriter effect
+    let titleIndex = 0;
+    const titleInterval = setInterval(() => {
+      if (titleIndex < title.length) {
+        setDisplayedTitle(title.slice(0, titleIndex + 1));
+        titleIndex++;
+      } else {
+        clearInterval(titleInterval);
+        
+        // Start subtitle typewriter effect after title is complete
+        let subtitleIndex = 0;
+        const subtitleInterval = setInterval(() => {
+          if (subtitleIndex < subtitle.length) {
+            setDisplayedSubtitle(subtitle.slice(0, subtitleIndex + 1));
+            subtitleIndex++;
+          } else {
+            clearInterval(subtitleInterval);
+            
+            // Show buttons after subtitle is complete
+            setTimeout(() => {
+              setShowButtons(true);
+            }, buttonDelay);
+          }
+        }, subtitleSpeed);
+      }
+    }, titleSpeed);
+
+    // Cleanup function
+    return () => {
+      clearInterval(titleInterval);
+    };
+  }, [profile, t]);
 
   const fetchNewArrivals = async () => {
     try {
@@ -150,35 +207,39 @@ export function HomePage() {
         <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white py-20">
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center animate-fade-in">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                {profile ? t('home.welcomeUser', { name: profile.full_name }) : t('home.welcome')}
+            <div id="hero-text" className="text-center">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 min-h-[4rem] md:min-h-[6rem]">
+                {displayedTitle}
+                <span className="animate-pulse">|</span>
               </h1>
-              <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto">
-                {t('home.subtitle')}
+              <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto min-h-[3rem] md:min-h-[4rem]">
+                {displayedSubtitle}
+                {displayedSubtitle && <span className="animate-pulse">|</span>}
               </p>
               
               {/* Role-based buttons for logged in users */}
-              {profile ? (
-                <div className="max-w-4xl mx-auto">
-                  {getRoleBasedButtons()}
-                </div>
-              ) : (
-                <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
-                  <Link
-                    to="/auth/signup"
-                    className="inline-flex items-center px-8 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 hover:scale-105 hover:shadow-lg transition-all duration-200"
-                  >
-                    {t('home.getStarted')}
-                  </Link>
-                  <Link
-                    to="/auth/login"
-                    className="inline-flex items-center px-8 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-blue-600 hover:scale-105 hover:shadow-lg transition-all duration-200"
-                  >
-                    {t('home.signIn')}
-                  </Link>
-                </div>
-              )}
+              <div className={`transition-all duration-500 ${showButtons ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                {profile ? (
+                  <div className="max-w-4xl mx-auto">
+                    {getRoleBasedButtons()}
+                  </div>
+                ) : (
+                  <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
+                    <Link
+                      to="/auth/signup"
+                      className="inline-flex items-center px-8 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 hover:scale-105 hover:shadow-lg transition-all duration-200"
+                    >
+                      {t('home.getStarted')}
+                    </Link>
+                    <Link
+                      to="/auth/login"
+                      className="inline-flex items-center px-8 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-blue-600 hover:scale-105 hover:shadow-lg transition-all duration-200"
+                    >
+                      {t('home.signIn')}
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </section>
