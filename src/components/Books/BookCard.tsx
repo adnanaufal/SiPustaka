@@ -1,10 +1,11 @@
-import React from 'react';
-import { ShoppingCart, Edit, Trash2, Package } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import { useCart } from '../../hooks/useCart';
-import type { Database } from '../../lib/supabase';
+import React from "react";
+import { ShoppingCart, Edit, Trash2, Package } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
+import { useCart } from "../../hooks/useCart";
+import type { Database } from "../../lib/supabase";
+import { formatRupiah } from "../../utils/formatters"; // Impor fungsi format Rupiah
 
-type Book = Database['public']['Tables']['books']['Row'];
+type Book = Database["public"]["Tables"]["books"]["Row"];
 
 interface BookCardProps {
   book: Book;
@@ -13,7 +14,12 @@ interface BookCardProps {
   onUpdateStock?: (book: Book) => void;
 }
 
-export function BookCard({ book, onEdit, onDelete, onUpdateStock }: BookCardProps) {
+export function BookCard({
+  book,
+  onEdit,
+  onDelete,
+  onUpdateStock,
+}: BookCardProps) {
   const { profile } = useAuth();
   const { addToCart } = useCart();
 
@@ -35,20 +41,24 @@ export function BookCard({ book, onEdit, onDelete, onUpdateStock }: BookCardProp
           <div className="w-full h-full flex items-center justify-center">
             <div className="text-center">
               <Package className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
-              <p className="text-sm text-gray-500 dark:text-gray-400">No Cover</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                No Cover
+              </p>
             </div>
           </div>
         )}
-        
+
         {/* Stock Badge */}
         <div className="absolute top-3 right-3">
-          <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-            book.stock > 10
-              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-              : book.stock > 0
-              ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-              : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-          }`}>
+          <span
+            className={`px-2 py-1 text-xs font-medium rounded-full ${
+              book.stock > 10
+                ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                : book.stock > 0
+                ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+            }`}
+          >
             {book.stock} left
           </span>
         </div>
@@ -59,11 +69,11 @@ export function BookCard({ book, onEdit, onDelete, onUpdateStock }: BookCardProp
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
           {book.title}
         </h3>
-        
+
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
           by {book.author}
         </p>
-        
+
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm text-gray-500 dark:text-gray-500">
             {book.category} • {book.year}
@@ -77,13 +87,13 @@ export function BookCard({ book, onEdit, onDelete, onUpdateStock }: BookCardProp
         {/* Price */}
         <div className="flex items-center justify-between mb-4">
           <span className="text-2xl font-bold text-gray-900 dark:text-white">
-            ${book.price.toFixed(2)}
+            {formatRupiah(book.price)}
           </span>
         </div>
 
         {/* Actions */}
         <div className="flex items-center space-x-2">
-          {profile?.role === 'customer' && (
+          {profile?.role === "customer" && (
             <button
               onClick={handleAddToCart}
               disabled={book.stock === 0}
@@ -94,9 +104,9 @@ export function BookCard({ book, onEdit, onDelete, onUpdateStock }: BookCardProp
             </button>
           )}
 
-          {(profile?.role === 'admin' || profile?.role === 'cashier') && (
+          {(profile?.role === "admin" || profile?.role === "cashier") && (
             <>
-              {profile?.role === 'admin' && (
+              {profile?.role === "admin" && (
                 <>
                   <button
                     onClick={() => onEdit?.(book)}
@@ -104,7 +114,7 @@ export function BookCard({ book, onEdit, onDelete, onUpdateStock }: BookCardProp
                   >
                     <Edit className="w-4 h-4" />
                   </button>
-                  
+
                   <button
                     onClick={() => onDelete?.(book)}
                     className="flex items-center justify-center p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors duration-200"
@@ -113,7 +123,7 @@ export function BookCard({ book, onEdit, onDelete, onUpdateStock }: BookCardProp
                   </button>
                 </>
               )}
-              
+
               <button
                 onClick={() => onUpdateStock?.(book)}
                 className="flex items-center justify-center p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors duration-200"
