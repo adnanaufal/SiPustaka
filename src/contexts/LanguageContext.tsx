@@ -3,7 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 interface LanguageContextType {
   language: 'en' | 'id';
   setLanguage: (lang: 'en' | 'id') => void;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, string>) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -54,6 +54,26 @@ const translations = {
     'home.shoppingCartDesc': 'Real-time cart management with automatic stock updates and reservation.',
     'home.userManagement': 'User Management',
     'home.userManagementDesc': 'Role-based access control with secure authentication and user profiles.',
+    
+    // Admin Dashboard
+    'admin.dashboard': 'Admin Dashboard',
+    'admin.manageOperations': 'Manage your bookstore operations',
+    'admin.addBook': 'Add Book',
+    'admin.totalBooks': 'Total Books',
+    'admin.totalUsers': 'Total Users',
+    'admin.transactions': 'Transactions',
+    'admin.revenue': 'Revenue',
+    'admin.quickActions': 'Quick Actions',
+    'admin.manageUsers': 'Manage Users',
+    'admin.viewReports': 'View Reports',
+    'admin.stockLogs': 'Stock Logs',
+    'admin.newArrivals': 'New Arrivals (Last 30 Days)',
+    'admin.bestSellers': 'Best Sellers',
+    'admin.lowStockBooks': 'Low Stock Books',
+    'admin.lowStockSubtitle': 'Books that need immediate restocking attention',
+    'admin.browseAllBooks': 'Browse All Books',
+    'admin.noLowStockBooks': 'All books have sufficient stock',
+    'admin.loadingDashboard': 'Loading dashboard...',
     
     // Customer Dashboard
     'customer.browseBooks': 'Browse Books',
@@ -138,6 +158,26 @@ const translations = {
     'home.shoppingCartDesc': 'Manajemen keranjang real-time dengan pembaruan stok otomatis dan reservasi.',
     'home.userManagement': 'Manajemen Pengguna',
     'home.userManagementDesc': 'Kontrol akses berbasis peran dengan autentikasi aman dan profil pengguna.',
+    
+    // Admin Dashboard
+    'admin.dashboard': 'Dasbor Admin',
+    'admin.manageOperations': 'Kelola operasi toko buku Anda',
+    'admin.addBook': 'Tambah Buku',
+    'admin.totalBooks': 'Total Buku',
+    'admin.totalUsers': 'Total Pengguna',
+    'admin.transactions': 'Transaksi',
+    'admin.revenue': 'Pendapatan',
+    'admin.quickActions': 'Aksi Cepat',
+    'admin.manageUsers': 'Kelola Pengguna',
+    'admin.viewReports': 'Lihat Laporan',
+    'admin.stockLogs': 'Log Stok',
+    'admin.newArrivals': 'Buku Terbaru (30 Hari Terakhir)',
+    'admin.bestSellers': 'Buku Terlaris',
+    'admin.lowStockBooks': 'Buku Stok Rendah',
+    'admin.lowStockSubtitle': 'Buku yang memerlukan perhatian restok segera',
+    'admin.browseAllBooks': 'Jelajahi Semua Buku',
+    'admin.noLowStockBooks': 'Semua buku memiliki stok yang cukup',
+    'admin.loadingDashboard': 'Memuat dasbor...',
     
     // Customer Dashboard
     'customer.browseBooks': 'Jelajahi Buku',

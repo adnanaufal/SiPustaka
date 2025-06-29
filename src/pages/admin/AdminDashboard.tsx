@@ -10,12 +10,15 @@ import {
   UserPlus,
   FileText,
   AlertTriangle,
+  Package,
 } from "lucide-react";
 import { Layout } from "../../components/Layout/Layout";
 import { BookCard } from "../../components/Books/BookCard";
 import { BookForm } from "../../components/Books/BookForm";
+import { BookDetailModal } from "../../components/Books/BookDetailModal";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../contexts/AuthContext";
+import { useLanguage } from "../../contexts/LanguageContext";
 import toast from "react-hot-toast";
 import type { Database } from "../../lib/supabase";
 
@@ -28,6 +31,7 @@ interface DashboardStats {
   totalRevenue: number;
   newArrivals: Book[];
   bestSellers: Book[];
+  lowStockBooks: Book[];
 }
 
 // Confirmation modal component
@@ -95,6 +99,7 @@ const ConfirmationModal = ({
 
 export function AdminDashboard() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
@@ -103,6 +108,7 @@ export function AdminDashboard() {
   const [formLoading, setFormLoading] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [bookToDelete, setBookToDelete] = useState<Book | null>(null);
+  const [selectedBookForDetail, setSelectedBookForDetail] = useState<Book | null>(null);
 
   useEffect(() => {
     fetchDashboardData();
@@ -155,6 +161,15 @@ export function AdminDashboard() {
           ?.map((item) => item.books as Book)
           .filter((book): book is Book => book !== null) || [];
 
+      // Get low stock books (3 books with lowest stock)
+      const { data: lowStockData } = await supabase
+        .from("books")
+        .select("*")
+        .order("stock", { ascending: true })
+        .limit(3);
+
+      const lowStockBooks: Book[] = lowStockData || [];
+
       setStats({
         totalBooks: booksData?.length || 0,
         totalUsers: usersCount || 0,
@@ -162,6 +177,7 @@ export function AdminDashboard() {
         totalRevenue,
         newArrivals,
         bestSellers,
+        lowStockBooks,
       });
 
       setBooks(booksData || []);
@@ -276,6 +292,14 @@ export function AdminDashboard() {
     }
   };
 
+  const handleViewDetail = (book: Book) => {
+    setSelectedBookForDetail(book);
+  };
+
+  const closeDetailModal = () => {
+    setSelectedBookForDetail(null);
+  };
+
   if (loading) {
     return (
       <Layout>
@@ -283,7 +307,7 @@ export function AdminDashboard() {
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
             <p className="text-gray-600 dark:text-gray-400 mt-4">
-              Loading dashboard...
+              {t('admin.loadingDashboard')}
             </p>
           </div>
         </div>
@@ -298,10 +322,10 @@ export function AdminDashboard() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Admin Dashboard
+              {t('admin.dashboard')}
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">
-              Manage your bookstore operations
+              {t('admin.manageOperations')}
             </p>
           </div>
 
@@ -311,7 +335,7 @@ export function AdminDashboard() {
               className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
             >
               <Plus className="w-5 h-5" />
-              <span>Add Book</span>
+              <span>{t('admin.addBook')}</span>
             </button>
           </div>
         </div>
@@ -327,7 +351,7 @@ export function AdminDashboard() {
                   </div>
                   <div className="ml-4">
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Total Books
+                      {t('admin.totalBooks')}
                     </p>
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
                       {stats.totalBooks}
@@ -343,7 +367,7 @@ export function AdminDashboard() {
                   </div>
                   <div className="ml-4">
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Total Users
+                      {t('admin.totalUsers')}
                     </p>
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
                       {stats.totalUsers}
@@ -359,7 +383,7 @@ export function AdminDashboard() {
                   </div>
                   <div className="ml-4">
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Transactions
+                      {t('admin.transactions')}
                     </p>
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
                       {stats.totalTransactions}
@@ -375,7 +399,7 @@ export function AdminDashboard() {
                   </div>
                   <div className="ml-4">
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Revenue
+                      {t('admin.revenue')}
                     </p>
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
                       ${stats.totalRevenue.toFixed(2)}
@@ -388,7 +412,7 @@ export function AdminDashboard() {
             {/* Quick Actions */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                Quick Actions
+                {t('admin.quickActions')}
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <button
@@ -397,7 +421,7 @@ export function AdminDashboard() {
                 >
                   <Plus className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   <span className="text-blue-600 dark:text-blue-400 font-medium">
-                    Add Book
+                    {t('admin.addBook')}
                   </span>
                 </button>
                 <Link
@@ -406,28 +430,143 @@ export function AdminDashboard() {
                 >
                   <UserPlus className="w-5 h-5 text-green-600 dark:text-green-400" />
                   <span className="text-green-600 dark:text-green-400 font-medium">
-                    Manage Users
+                    {t('admin.manageUsers')}
                   </span>
                 </Link>
                 <button className="flex items-center space-x-3 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors duration-200">
                   <Eye className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                   <span className="text-purple-600 dark:text-purple-400 font-medium">
-                    View Reports
+                    {t('admin.viewReports')}
                   </span>
                 </button>
                 <button className="flex items-center space-x-3 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors duration-200">
                   <FileText className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                   <span className="text-orange-600 dark:text-orange-400 font-medium">
-                    Stock Logs
+                    {t('admin.stockLogs')}
                   </span>
                 </button>
               </div>
             </div>
 
+            {/* Low Stock Books Section */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                    {t('admin.lowStockBooks')}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 mt-1">
+                    {t('admin.lowStockSubtitle')}
+                  </p>
+                </div>
+              </div>
+
+              {stats.lowStockBooks.length > 0 ? (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                    {stats.lowStockBooks.map((book) => (
+                      <div key={book.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group border-l-4 border-red-500">
+                        {/* Book Cover */}
+                        <div className="aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 relative overflow-hidden">
+                          {book.cover_image ? (
+                            <img
+                              src={book.cover_image}
+                              alt={book.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <div className="text-center">
+                                <Package className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                  No Cover
+                                </p>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Critical Stock Badge */}
+                          <div className="absolute top-3 right-3">
+                            <span className="px-3 py-1 text-sm font-bold rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 border-2 border-red-500 animate-pulse">
+                              {book.stock} {t('book.left')}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Book Details */}
+                        <div className="p-6">
+                          <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
+                            {book.title}
+                          </h4>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                            by {book.author}
+                          </p>
+                          
+                          {/* Highlighted Stock Info */}
+                          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 mb-4">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-medium text-red-800 dark:text-red-200">
+                                Critical Stock Level
+                              </span>
+                              <span className="text-xl font-bold text-red-600 dark:text-red-400">
+                                {book.stock}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Actions */}
+                          <div className="flex items-center space-x-2">
+                            <button
+                              onClick={() => handleViewDetail(book)}
+                              className="flex items-center justify-center p-2 text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
+                              title={t('book.viewDetails')}
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => setEditingBook(book)}
+                              className="flex items-center justify-center p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors duration-200"
+                            >
+                              <Package className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Browse All Books Button */}
+                  <div className="w-full">
+                    <Link
+                      to="/customer"
+                      className="w-full flex items-center justify-center px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1"
+                    >
+                      <BookOpen className="w-5 h-5 mr-2" />
+                      {t('admin.browseAllBooks')}
+                    </Link>
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                  <Package className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                  <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                    {t('admin.noLowStockBooks')}
+                  </h4>
+                  <Link
+                    to="/customer"
+                    className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 mt-4"
+                  >
+                    <BookOpen className="w-5 h-5 mr-2" />
+                    {t('admin.browseAllBooks')}
+                  </Link>
+                </div>
+              )}
+            </div>
+
             {/* New Arrivals */}
             <div className="mb-8">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-                New Arrivals (Last 30 Days)
+                {t('admin.newArrivals')}
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {stats.newArrivals.map((book) => (
@@ -436,6 +575,7 @@ export function AdminDashboard() {
                     book={book}
                     onEdit={() => setEditingBook(book)}
                     onDelete={() => handleDeleteRequest(book)}
+                    onViewDetail={handleViewDetail}
                   />
                 ))}
               </div>
@@ -444,7 +584,7 @@ export function AdminDashboard() {
             {/* Best Sellers */}
             <div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-                Best Sellers
+                {t('admin.bestSellers')}
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {stats.bestSellers.map((book) => (
@@ -453,6 +593,7 @@ export function AdminDashboard() {
                     book={book}
                     onEdit={() => setEditingBook(book)}
                     onDelete={() => handleDeleteRequest(book)}
+                    onViewDetail={handleViewDetail}
                   />
                 ))}
               </div>
@@ -471,6 +612,14 @@ export function AdminDashboard() {
             setEditingBook(null);
           }}
           loading={formLoading}
+        />
+      )}
+
+      {/* Book Detail Modal */}
+      {selectedBookForDetail && (
+        <BookDetailModal
+          book={selectedBookForDetail}
+          onClose={closeDetailModal}
         />
       )}
 
