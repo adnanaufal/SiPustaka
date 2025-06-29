@@ -12,6 +12,7 @@ import { SignUpPage } from './pages/auth/SignUpPage';
 import { CustomerDashboard } from './pages/customer/CustomerDashboard';
 import { CartPage } from './pages/customer/CartPage';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
+import { UserManagementPage } from './pages/admin/UserManagementPage';
 
 function App() {
   return (
@@ -49,6 +50,15 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={['admin']}>
                     <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              {/* Rute baru untuk manajemen pengguna */}
+              <Route
+                path="/admin/users"
+                element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <UserManagementPage />
                   </ProtectedRoute>
                 }
               />
