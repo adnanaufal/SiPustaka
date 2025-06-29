@@ -30,7 +30,7 @@ interface DashboardStats {
   bestSellers: Book[];
 }
 
-// Confirmation modal component
+// Komponen Modal Konfirmasi
 const ConfirmationModal = ({
   isOpen,
   onClose,
@@ -52,10 +52,16 @@ const ConfirmationModal = ({
         <div className="p-6">
           <div className="flex items-start">
             <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30 sm:mx-0 sm:h-10 sm:w-10">
-              <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400" aria-hidden="true" />
+              <AlertTriangle
+                className="h-6 w-6 text-red-600 dark:text-red-400"
+                aria-hidden="true"
+              />
             </div>
             <div className="mt-0 ml-4 text-left">
-              <h3 className="text-lg leading-6 font-bold text-gray-900 dark:text-white" id="modal-title">
+              <h3
+                className="text-lg leading-6 font-bold text-gray-900 dark:text-white"
+                id="modal-title"
+              >
                 {title}
               </h3>
               <div className="mt-2">
@@ -90,7 +96,6 @@ const ConfirmationModal = ({
 export function AdminDashboard() {
   const { user } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [showBookForm, setShowBookForm] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | null>(null);
@@ -99,55 +104,79 @@ export function AdminDashboard() {
   const [bookToDelete, setBookToDelete] = useState<Book | null>(null);
 
   useEffect(() => {
+    // Ambil data awal saat komponen dimuat
     fetchDashboardData();
+
+    // Buat subscription ke tabel 'books' dan tabel lain yang relevan
+    const channel = supabase
+      .channel('dashboard-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'books' },
+        (payload) => {
+          console.log('Perubahan di tabel books!', payload);
+          toast('Books data updated!');
+          fetchDashboardData();
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'users' },
+        (payload) => {
+          console.log('Perubahan di tabel users!', payload);
+          fetchDashboardData();
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'transactions' },
+        (payload) => {
+          console.log('Perubahan di tabel transactions!', payload);
+          fetchDashboardData();
+        }
+      )
+      .subscribe();
+
+    // Fungsi cleanup untuk berhenti mendengarkan
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchDashboardData = async () => {
     try {
-      // Fetch books
-      const { data: booksData } = await supabase
+      const { data: booksData, error: booksError } = await supabase
         .from("books")
         .select("*")
         .order("created_at", { ascending: false });
+      if (booksError) throw booksError;
 
-      // Fetch users count
-      const { count: usersCount } = await supabase
+      const { count: usersCount, error: usersError } = await supabase
         .from("users")
         .select("*", { count: "exact" });
+      if (usersError) throw usersError;
 
-      // Fetch transactions
-      const { data: transactionsData, count: transactionsCount } =
+      const { data: transactionsData, count: transactionsCount, error: transError } =
         await supabase
           .from("transactions")
           .select("total_amount", { count: "exact" })
           .eq("status", "completed");
+      if (transError) throw transError;
 
-      // Calculate revenue
-      const totalRevenue =
-        transactionsData?.reduce((sum, t) => sum + Number(t.total_amount), 0) ||
-        0;
+      const totalRevenue = transactionsData?.reduce((sum, t) => sum + Number(t.total_amount), 0) || 0;
 
-      // Get new arrivals (last 30 days)
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const newArrivals = booksData?.filter((book) => new Date(book.created_at) >= thirtyDaysAgo).slice(0, 4) || [];
 
-      const newArrivals =
-        booksData
-          ?.filter((book) => new Date(book.created_at) >= thirtyDaysAgo)
-          .slice(0, 4) || [];
-
-      // Get best sellers (books with most transaction items)
-      // Note: This is a simplified approach. For larger datasets, a database function would be better.
-      const { data: bestSellersData } = await supabase
+      const { data: bestSellersData, error: bestSellersError } = await supabase
         .from("transaction_items")
         .select("book_id, quantity, books!inner(*)")
         .order("quantity", { ascending: false })
         .limit(4);
-
-      const bestSellers: Book[] =
-        bestSellersData
-          ?.map((item) => item.books as Book)
-          .filter((book): book is Book => book !== null) || [];
+      if (bestSellersError) throw bestSellersError;
+      
+      const bestSellers: Book[] = bestSellersData?.map((item) => item.books as Book).filter((book): book is Book => book !== null) || [];
 
       setStats({
         totalBooks: booksData?.length || 0,
@@ -158,114 +187,74 @@ export function AdminDashboard() {
         bestSellers,
       });
 
-      setBooks(booksData || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching dashboard data:", error);
-      toast.error("Failed to load dashboard data");
+      toast.error(`Failed to load dashboard data: ${error.message}`);
     } finally {
       setLoading(false);
     }
   };
-
-  const handleAddBook = async (
-    bookData: Omit<Book, "id" | "created_at" | "updated_at">
-  ) => {
+  
+  const handleAddBook = async (bookData: Omit<Book, "id" | "created_at" | "updated_at">) => {
     setFormLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("books")
-        .insert(bookData)
-        .select()
-        .single();
-
+      const { data, error } = await supabase.from("books").insert(bookData).select().single();
       if (error) throw error;
 
-      // Add stock log
       if (bookData.stock > 0) {
-        await supabase.from("stock_logs").insert({
-          book_id: data.id,
-          change_type: "add",
-          quantity_change: bookData.stock,
-          previous_stock: 0,
-          new_stock: bookData.stock,
-          user_id: user!.id,
-          notes: "Initial stock when adding book",
-        });
+        await supabase.from("stock_logs").insert({ book_id: data.id, change_type: "add", quantity_change: bookData.stock, previous_stock: 0, new_stock: bookData.stock, user_id: user!.id, notes: "Initial stock when adding book" });
       }
 
       toast.success("Book added successfully");
       setShowBookForm(false);
-      fetchDashboardData();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error adding book:", error);
-      toast.error("Failed to add book");
+      toast.error(`Failed to add book: ${error.message}`);
     } finally {
       setFormLoading(false);
     }
   };
-
-  const handleEditBook = async (
-    bookData: Omit<Book, "id" | "created_at" | "updated_at">
-  ) => {
-    if (!editingBook) return;
-
+  
+  const handleEditBook = async (bookData: Omit<Book, "id" | "created_at" | "updated_at">, bookToEdit: Book) => {
     setFormLoading(true);
     try {
-      const { error } = await supabase
-        .from("books")
-        .update(bookData)
-        .eq("id", editingBook.id);
-
+      const { error } = await supabase.from("books").update(bookData).eq("id", bookToEdit.id);
       if (error) throw error;
 
-      // Log stock change if stock was updated
-      if (bookData.stock !== editingBook.stock) {
-        const stockChange = bookData.stock - editingBook.stock;
-        await supabase.from("stock_logs").insert({
-          book_id: editingBook.id,
-          change_type: stockChange > 0 ? "add" : "remove",
-          quantity_change: stockChange,
-          previous_stock: editingBook.stock,
-          new_stock: bookData.stock,
-          user_id: user!.id,
-          notes: "Stock updated via book edit",
-        });
+      if (bookData.stock !== bookToEdit.stock) {
+        const stockChange = bookData.stock - bookToEdit.stock;
+        await supabase.from("stock_logs").insert({ book_id: bookToEdit.id, change_type: stockChange > 0 ? "add" : "remove", quantity_change: stockChange, previous_stock: bookToEdit.stock, new_stock: bookData.stock, user_id: user!.id, notes: "Stock updated via book edit" });
       }
 
       toast.success("Book updated successfully");
-      setEditingBook(null);
       setShowBookForm(false);
-      fetchDashboardData();
-    } catch (error) {
+      setEditingBook(null);
+    } catch (error: any) {
       console.error("Error updating book:", error);
-      toast.error("Failed to update book");
+      toast.error(`Failed to update book: ${error.message}`);
     } finally {
       setFormLoading(false);
     }
   };
 
-// Function to handle book deletion
-const handleDeleteRequest = (book: Book) => {
-  setBookToDelete(book);
-  setShowConfirmation(true);
-};
-
-// Function to confirm book deletion
-const confirmDelete = async () => {
-  if (!bookToDelete) return;
-
-  try {
-    const { error } = await supabase.from("books").delete().eq("id", bookToDelete.id);
-    if (error) throw error;
-    toast.success(`"${bookToDelete.title}" has been deleted.`);
-    fetchDashboardData();
-  } catch (error: any) {
-    toast.error(`Failed to delete book: ${error.message}`);
-  } finally {
-    setShowConfirmation(false);
-    setBookToDelete(null);
-  }
-};
+  const handleDeleteRequest = (book: Book) => {
+    setBookToDelete(book);
+    setShowConfirmation(true);
+  };
+  
+  const confirmDelete = async () => {
+    if (!bookToDelete) return;
+    try {
+      const { error } = await supabase.from("books").delete().eq("id", bookToDelete.id);
+      if (error) throw error;
+      toast.success(`"${bookToDelete.title}" has been deleted.`);
+    } catch (error: any) {
+      toast.error(`Failed to delete book: ${error.message}`);
+    } finally {
+      setShowConfirmation(false);
+      setBookToDelete(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -285,20 +274,14 @@ const confirmDelete = async () => {
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Admin Dashboard
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
-              Manage your bookstore operations
-            </p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">Manage your bookstore operations</p>
           </div>
-
           <div className="flex items-center space-x-4">
             <button
-              onClick={() => setShowBookForm(true)}
+              onClick={() => { setEditingBook(null); setShowBookForm(true); }}
               className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
             >
               <Plus className="w-5 h-5" />
@@ -307,7 +290,6 @@ const confirmDelete = async () => {
           </div>
         </div>
 
-        {/* Stats */}
         {stats && (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -317,132 +299,90 @@ const confirmDelete = async () => {
                     <BookOpen className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Total Books
-                    </p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {stats.totalBooks}
-                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Total Books</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalBooks}</p>
                   </div>
                 </div>
               </div>
-
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
                     <Users className="w-6 h-6 text-green-600 dark:text-green-400" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Total Users
-                    </p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {stats.totalUsers}
-                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Total Users</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalUsers}</p>
                   </div>
                 </div>
               </div>
-
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
                     <TrendingUp className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Transactions
-                    </p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {stats.totalTransactions}
-                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Transactions</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalTransactions}</p>
                   </div>
                 </div>
               </div>
-
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
                     <DollarSign className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Revenue
-                    </p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                      ${stats.totalRevenue.toFixed(2)}
-                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Revenue</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">${stats.totalRevenue.toFixed(2)}</p>
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* Quick Actions */}
+            
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                Quick Actions
-              </h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <button
-                  onClick={() => setShowBookForm(true)}
-                  className="flex items-center space-x-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors duration-200"
-                >
+                <button onClick={() => { setEditingBook(null); setShowBookForm(true); }} className="flex items-center space-x-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors duration-200">
                   <Plus className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                  <span className="text-blue-600 dark:text-blue-400 font-medium">
-                    Add Book
-                  </span>
+                  <span className="text-blue-600 dark:text-blue-400 font-medium">Add Book</span>
                 </button>
-                <Link
-                  to="/admin/users"
-                  className="flex items-center space-x-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors duration-200"
-                >
+                <Link to="/admin/users" className="flex items-center space-x-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors duration-200">
                   <UserPlus className="w-5 h-5 text-green-600 dark:text-green-400" />
-                  <span className="text-green-600 dark:text-green-400 font-medium">
-                    Manage Users
-                  </span>
+                  <span className="text-green-600 dark:text-green-400 font-medium">Manage Users</span>
                 </Link>
                 <button className="flex items-center space-x-3 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors duration-200">
                   <Eye className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                  <span className="text-purple-600 dark:text-purple-400 font-medium">
-                    View Reports
-                  </span>
+                  <span className="text-purple-600 dark:text-purple-400 font-medium">View Reports</span>
                 </button>
                 <button className="flex items-center space-x-3 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors duration-200">
                   <FileText className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                  <span className="text-orange-600 dark:text-orange-400 font-medium">
-                    Stock Logs
-                  </span>
+                  <span className="text-orange-600 dark:text-orange-400 font-medium">Stock Logs</span>
                 </button>
               </div>
             </div>
 
-            {/* New Arrivals */}
             <div className="mb-8">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-                New Arrivals (Last 30 Days)
-              </h3>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">New Arrivals</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {stats.newArrivals.map((book) => (
                   <BookCard
                     key={book.id}
                     book={book}
-                    onEdit={() => setEditingBook(book)}
+                    onEdit={() => { setEditingBook(book); setShowBookForm(true); }}
                     onDelete={() => handleDeleteRequest(book)}
                   />
                 ))}
               </div>
             </div>
 
-            {/* Best Sellers */}
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-                Best Sellers
-              </h3>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Best Sellers</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {stats.bestSellers.map((book) => (
                   <BookCard
                     key={book.id}
                     book={book}
-                    onEdit={() => setEditingBook(book)}
+                    onEdit={() => { setEditingBook(book); setShowBookForm(true); }}
                     onDelete={() => handleDeleteRequest(book)}
                   />
                 ))}
@@ -452,27 +392,22 @@ const confirmDelete = async () => {
         )}
       </div>
 
-      {/* Book Form Modal */}
-      {(showBookForm || editingBook) && (
+      {showBookForm && (
         <BookForm
           book={editingBook || undefined}
-          onSubmit={editingBook ? handleEditBook : handleAddBook}
-          onClose={() => {
-            setShowBookForm(false);
-            setEditingBook(null);
-          }}
+          onSubmit={editingBook ? (data) => handleEditBook(data, editingBook) : handleAddBook}
+          onClose={() => { setShowBookForm(false); setEditingBook(null); }}
           loading={formLoading}
         />
       )}
 
-      <ConfirmationModal 
+      <ConfirmationModal
         isOpen={showConfirmation}
         onClose={() => setShowConfirmation(false)}
         onConfirm={confirmDelete}
         title="Delete Book"
         message={`Are you sure you want to delete "${bookToDelete?.title}"? This action cannot be undone.`}
       />
-      
     </Layout>
   );
 }
