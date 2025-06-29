@@ -205,32 +205,30 @@ export function HomePage() {
       <div className="relative">
         {/* Hero Section */}
         <section className="relative text-white py-20 overflow-hidden">
-          {/* Video Background */}
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
+          {/* GIF Background */}
+          <div 
+            className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage: 'url(/giphy%20(3).gif)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat'
+            }}
           >
-            <source
-              src="https://videos.pexels.com/video-files/6195547/6195547-uhd_2560_1440_25fps.mp4"
-              type="video/mp4"
-            />
-            {/* Fallback for browsers that don't support video */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800"></div>
-          </video>
+            {/* Fallback gradient for loading or if GIF fails */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 opacity-0 transition-opacity duration-300"></div>
+          </div>
           
-          {/* Dark overlay for text readability */}
-          <div className="absolute inset-0 bg-black/60"></div>
+          {/* Enhanced dark overlay for better text readability */}
+          <div className="absolute inset-0 bg-black/70"></div>
           
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div id="hero-text" className="text-center">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 min-h-[4rem] md:min-h-[6rem]">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 min-h-[4rem] md:min-h-[6rem] text-shadow-lg">
                 {displayedTitle}
                 <span className="animate-pulse">|</span>
               </h1>
-              <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto min-h-[3rem] md:min-h-[4rem]">
+              <p className="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto min-h-[3rem] md:min-h-[4rem] text-shadow-md">
                 {displayedSubtitle}
                 {displayedSubtitle && <span className="animate-pulse">|</span>}
               </p>
