@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, testConnection } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -21,12 +21,21 @@ export function useCart() {
   const { user } = useAuth();
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [connectionError, setConnectionError] = useState<string | null>(null);
 
   const fetchCartItems = async () => {
     if (!user) return;
 
     setLoading(true);
+    setConnectionError(null);
+    
     try {
+      // Test connection first
+      const connectionTest = await testConnection();
+      if (!connectionTest.success) {
+        throw new Error(`Connection failed: ${connectionTest.message}`);
+      }
+
       const { data, error } = await supabase
         .from('cart_items')
         .select(`
@@ -44,11 +53,22 @@ export function useCart() {
         `)
         .eq('user_id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw new Error(`Database error: ${error.message}`);
+      }
+      
       setItems(data || []);
     } catch (error) {
       console.error('Error fetching cart items:', error);
-      toast.error('Failed to load cart items');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      setConnectionError(errorMessage);
+      
+      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('Connection failed')) {
+        toast.error('Unable to connect to the server. Please check your internet connection and try again.');
+      } else {
+        toast.error('Failed to load cart items');
+      }
     } finally {
       setLoading(false);
     }
@@ -61,12 +81,23 @@ export function useCart() {
     }
 
     try {
+      // Test connection first
+      const connectionTest = await testConnection();
+      if (!connectionTest.success) {
+        throw new Error(`Connection failed: ${connectionTest.message}`);
+      }
+
       // First, check if book has enough stock
-      const { data: book } = await supabase
+      const { data: book, error: bookError } = await supabase
         .from('books')
         .select('stock')
         .eq('id', bookId)
         .single();
+
+      if (bookError) {
+        console.error('Error fetching book:', bookError);
+        throw new Error(`Failed to fetch book data: ${bookError.message}`);
+      }
 
       if (!book || book.stock < quantity) {
         toast.error('Not enough stock available');
@@ -74,12 +105,17 @@ export function useCart() {
       }
 
       // Check if item already exists in cart
-      const { data: existingItem } = await supabase
+      const { data: existingItem, error: existingError } = await supabase
         .from('cart_items')
         .select('*')
         .eq('user_id', user.id)
         .eq('book_id', bookId)
         .single();
+
+      if (existingError && existingError.code !== 'PGRST116') {
+        console.error('Error checking existing cart item:', existingError);
+        throw new Error(`Failed to check cart: ${existingError.message}`);
+      }
 
       if (existingItem) {
         // Update quantity
@@ -133,7 +169,13 @@ export function useCart() {
       fetchCartItems();
     } catch (error) {
       console.error('Error adding to cart:', error);
-      toast.error('Failed to add item to cart');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      
+      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('Connection failed')) {
+        toast.error('Unable to connect to the server. Please check your internet connection and try again.');
+      } else {
+        toast.error('Failed to add item to cart');
+      }
     }
   };
 
@@ -144,6 +186,12 @@ export function useCart() {
     }
 
     try {
+      // Test connection first
+      const connectionTest = await testConnection();
+      if (!connectionTest.success) {
+        throw new Error(`Connection failed: ${connectionTest.message}`);
+      }
+
       const item = items.find(i => i.id === itemId);
       if (!item) return;
 
@@ -190,12 +238,24 @@ export function useCart() {
       fetchCartItems();
     } catch (error) {
       console.error('Error updating quantity:', error);
-      toast.error('Failed to update quantity');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      
+      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('Connection failed')) {
+        toast.error('Unable to connect to the server. Please check your internet connection and try again.');
+      } else {
+        toast.error('Failed to update quantity');
+      }
     }
   };
 
   const removeFromCart = async (itemId: string) => {
     try {
+      // Test connection first
+      const connectionTest = await testConnection();
+      if (!connectionTest.success) {
+        throw new Error(`Connection failed: ${connectionTest.message}`);
+      }
+
       const item = items.find(i => i.id === itemId);
       if (!item) return;
 
@@ -233,7 +293,13 @@ export function useCart() {
       fetchCartItems();
     } catch (error) {
       console.error('Error removing from cart:', error);
-      toast.error('Failed to remove item from cart');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      
+      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('Connection failed')) {
+        toast.error('Unable to connect to the server. Please check your internet connection and try again.');
+      } else {
+        toast.error('Failed to remove item from cart');
+      }
     }
   };
 
@@ -241,6 +307,12 @@ export function useCart() {
     if (!user) return;
 
     try {
+      // Test connection first
+      const connectionTest = await testConnection();
+      if (!connectionTest.success) {
+        throw new Error(`Connection failed: ${connectionTest.message}`);
+      }
+
       // Return all stock first
       for (const item of items) {
         const newStock = item.book.stock + item.quantity;
@@ -275,7 +347,13 @@ export function useCart() {
       toast.success('Cart cleared');
     } catch (error) {
       console.error('Error clearing cart:', error);
-      toast.error('Failed to clear cart');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      
+      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('Connection failed')) {
+        toast.error('Unable to connect to the server. Please check your internet connection and try again.');
+      } else {
+        toast.error('Failed to clear cart');
+      }
     }
   };
 
@@ -283,6 +361,12 @@ export function useCart() {
     if (!user || items.length === 0) return;
 
     try {
+      // Test connection first
+      const connectionTest = await testConnection();
+      if (!connectionTest.success) {
+        throw new Error(`Connection failed: ${connectionTest.message}`);
+      }
+
       const totalAmount = items.reduce((sum, item) => sum + (item.book.price * item.quantity), 0);
 
       // Create transaction
@@ -340,7 +424,13 @@ export function useCart() {
       return transaction.id;
     } catch (error) {
       console.error('Error during checkout:', error);
-      toast.error('Failed to complete purchase');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      
+      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('Connection failed')) {
+        toast.error('Unable to connect to the server. Please check your internet connection and try again.');
+      } else {
+        toast.error('Failed to complete purchase');
+      }
       throw error;
     }
   };
@@ -355,6 +445,7 @@ export function useCart() {
   return {
     items,
     loading,
+    connectionError,
     totalItems,
     totalAmount,
     addToCart,

@@ -7,7 +7,40 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Validate URL format
+try {
+  new URL(supabaseUrl);
+} catch (error) {
+  throw new Error('Invalid Supabase URL format');
+}
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
+  },
+  global: {
+    headers: {
+      'X-Client-Info': 'supabase-js-web'
+    }
+  }
+});
+
+// Test connection function
+export const testConnection = async () => {
+  try {
+    const { data, error } = await supabase.from('books').select('count').limit(1);
+    if (error) throw error;
+    return { success: true, message: 'Connection successful' };
+  } catch (error) {
+    console.error('Supabase connection test failed:', error);
+    return { 
+      success: false, 
+      message: error instanceof Error ? error.message : 'Unknown connection error' 
+    };
+  }
+};
 
 export type Database = {
   public: {
@@ -99,6 +132,26 @@ export type Database = {
           user_id?: string;
           book_id?: string;
           quantity?: number;
+          created_at?: string;
+        };
+      };
+      wishlist_items: {
+        Row: {
+          id: string;
+          user_id: string;
+          book_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          book_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          book_id?: string;
           created_at?: string;
         };
       };

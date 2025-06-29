@@ -1,7 +1,8 @@
 import React from "react";
-import { ShoppingCart, Edit, Trash2, Package, Eye } from "lucide-react";
+import { ShoppingCart, Edit, Trash2, Package, Eye, Heart } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useCart } from "../../hooks/useCart";
+import { useWishlist } from "../../hooks/useWishlist";
 import { useLanguage } from "../../contexts/LanguageContext";
 import type { Database } from "../../lib/supabase";
 import { formatRupiah } from "../../utils/formatters";
@@ -25,11 +26,22 @@ export function BookCard({
 }: BookCardProps) {
   const { profile } = useAuth();
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlistByBookId, isInWishlist } = useWishlist();
   const { t } = useLanguage();
 
   const handleAddToCart = () => {
     addToCart(book.id, 1);
   };
+
+  const handleWishlistToggle = () => {
+    if (isInWishlist(book.id)) {
+      removeFromWishlistByBookId(book.id);
+    } else {
+      addToWishlist(book.id);
+    }
+  };
+
+  const inWishlist = isInWishlist(book.id);
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group">
@@ -101,22 +113,43 @@ export function BookCard({
           {onViewDetail && (
             <button
               onClick={() => onViewDetail(book)}
-              className="flex items-center justify-center p-2 text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
+              className="group/btn flex items-center justify-center w-8 h-8 text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:w-auto hover:px-3 overflow-hidden"
               title={t('book.viewDetails')}
             >
-              <Eye className="w-4 h-4" />
+              <Eye className="w-4 h-4 group-hover/btn:hidden" />
+              <span className="hidden group-hover/btn:block text-sm font-medium whitespace-nowrap">
+                {t('book.viewDetails')}
+              </span>
             </button>
           )}
 
           {profile?.role === "customer" && (
-            <button
-              onClick={handleAddToCart}
-              disabled={book.stock === 0}
-              className="flex-1 flex items-center justify-center space-x-2 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
-            >
-              <ShoppingCart className="w-4 h-4" />
-              <span>{t('book.addToCart')}</span>
-            </button>
+            <>
+              <button
+                onClick={handleAddToCart}
+                disabled={book.stock === 0}
+                className="flex-1 flex items-center justify-center space-x-2 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                <span>{t('book.addToCart')}</span>
+              </button>
+
+              {/* Wishlist Button */}
+              <button
+                onClick={handleWishlistToggle}
+                className={`group/btn flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-200 hover:w-auto hover:px-3 overflow-hidden ${
+                  inWishlist
+                    ? 'text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30'
+                    : 'text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                }`}
+                title={inWishlist ? t('book.removeFromWishlist') : t('book.addToWishlist')}
+              >
+                <Heart className={`w-4 h-4 group-hover/btn:hidden ${inWishlist ? 'fill-current' : ''}`} />
+                <span className="hidden group-hover/btn:block text-sm font-medium whitespace-nowrap">
+                  {inWishlist ? t('book.removeFromWishlist') : t('book.addToWishlist')}
+                </span>
+              </button>
+            </>
           )}
 
           {(profile?.role === "admin" || profile?.role === "cashier") && (
@@ -125,25 +158,34 @@ export function BookCard({
                 <>
                   <button
                     onClick={() => onEdit?.(book)}
-                    className="flex items-center justify-center p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors duration-200"
+                    className="group/btn flex items-center justify-center w-8 h-8 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200 hover:w-auto hover:px-3 overflow-hidden"
                   >
-                    <Edit className="w-4 h-4" />
+                    <Edit className="w-4 h-4 group-hover/btn:hidden" />
+                    <span className="hidden group-hover/btn:block text-sm font-medium whitespace-nowrap">
+                      {t('book.edit')}
+                    </span>
                   </button>
 
                   <button
                     onClick={() => onDelete?.(book)}
-                    className="flex items-center justify-center p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors duration-200"
+                    className="group/btn flex items-center justify-center w-8 h-8 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200 hover:w-auto hover:px-3 overflow-hidden"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4 group-hover/btn:hidden" />
+                    <span className="hidden group-hover/btn:block text-sm font-medium whitespace-nowrap">
+                      {t('book.delete')}
+                    </span>
                   </button>
                 </>
               )}
 
               <button
                 onClick={() => onUpdateStock?.(book)}
-                className="flex items-center justify-center p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors duration-200"
+                className="group/btn flex items-center justify-center w-8 h-8 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-all duration-200 hover:w-auto hover:px-3 overflow-hidden"
               >
-                <Package className="w-4 h-4" />
+                <Package className="w-4 h-4 group-hover/btn:hidden" />
+                <span className="hidden group-hover/btn:block text-sm font-medium whitespace-nowrap">
+                  {t('book.updateStock')}
+                </span>
               </button>
             </>
           )}

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Search, Filter, ShoppingCart } from 'lucide-react';
 import { Layout } from '../../components/Layout/Layout';
 import { BookCard } from '../../components/Books/BookCard';
+import { BookDetailModal } from '../../components/Books/BookDetailModal';
 import { CartSidebar } from '../../components/Cart/CartSidebar';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { supabase } from '../../lib/supabase';
@@ -11,13 +13,15 @@ type Book = Database['public']['Tables']['books']['Row'];
 
 export function CustomerDashboard() {
   const { t } = useLanguage();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [books, setBooks] = useState<Book[]>([]);
   const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [sortBy, setSortBy] = useState('title');
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
+  const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'title');
   const [showCart, setShowCart] = useState(false);
+  const [selectedBookForDetail, setSelectedBookForDetail] = useState<Book | null>(null);
 
   useEffect(() => {
     fetchBooks();
@@ -26,6 +30,23 @@ export function CustomerDashboard() {
   useEffect(() => {
     filterBooks();
   }, [books, searchTerm, selectedCategory, sortBy]);
+
+  useEffect(() => {
+    // Update state when URL parameters change
+    setSearchTerm(searchParams.get('search') || '');
+    setSelectedCategory(searchParams.get('category') || '');
+    setSortBy(searchParams.get('sort') || 'title');
+  }, [searchParams]);
+
+  useEffect(() => {
+    // Update URL parameters when state changes
+    const params = new URLSearchParams();
+    if (searchTerm) params.set('search', searchTerm);
+    if (selectedCategory) params.set('category', selectedCategory);
+    if (sortBy && sortBy !== 'title') params.set('sort', sortBy);
+    
+    setSearchParams(params);
+  }, [searchTerm, selectedCategory, sortBy, setSearchParams]);
 
   const fetchBooks = async () => {
     try {
@@ -82,6 +103,14 @@ export function CustomerDashboard() {
     setFilteredBooks(filtered);
   };
 
+  const handleViewDetail = (book: Book) => {
+    setSelectedBookForDetail(book);
+  };
+
+  const closeDetailModal = () => {
+    setSelectedBookForDetail(null);
+  };
+
   const categories = [...new Set(books.map((book) => book.category))];
 
   if (loading) {
@@ -120,9 +149,9 @@ export function CustomerDashboard() {
           </button>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {/* Mobile Filters - Only show on small screens */}
+        <div className="md:hidden bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+          <div className="space-y-4">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -166,16 +195,37 @@ export function CustomerDashboard() {
             </select>
 
             {/* Results Count */}
-            <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+            <div className="text-sm text-gray-600 dark:text-gray-400">
               {filteredBooks.length} {t('customer.booksFound')}
             </div>
+          </div>
+        </div>
+
+        {/* Desktop Results Count - Only show on medium screens and up */}
+        <div className="hidden md:block mb-6">
+          <div className="text-sm text-gray-600 dark:text-gray-400">
+            {filteredBooks.length} {t('customer.booksFound')}
+            {searchTerm && (
+              <span className="ml-2">
+                for "{searchTerm}"
+              </span>
+            )}
+            {selectedCategory && (
+              <span className="ml-2">
+                in {selectedCategory}
+              </span>
+            )}
           </div>
         </div>
 
         {/* Books Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredBooks.map((book) => (
-            <BookCard key={book.id} book={book} />
+            <BookCard 
+              key={book.id} 
+              book={book} 
+              onViewDetail={handleViewDetail}
+            />
           ))}
         </div>
 
@@ -186,14 +236,34 @@ export function CustomerDashboard() {
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
               {t('customer.noBooksFound')}
             </h3>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
               {t('customer.adjustFilters')}
             </p>
+            {(searchTerm || selectedCategory) && (
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setSelectedCategory('');
+                  setSortBy('title');
+                }}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+              >
+                Clear Filters
+              </button>
+            )}
           </div>
         )}
       </div>
 
       <CartSidebar isOpen={showCart} onClose={() => setShowCart(false)} />
+      
+      {/* Book Detail Modal */}
+      {selectedBookForDetail && (
+        <BookDetailModal
+          book={selectedBookForDetail}
+          onClose={closeDetailModal}
+        />
+      )}
     </Layout>
   );
 }
