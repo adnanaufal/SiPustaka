@@ -12,6 +12,7 @@ import { LoginPage } from './pages/auth/LoginPage';
 import { SignUpPage } from './pages/auth/SignUpPage';
 import { CustomerDashboard } from './pages/customer/CustomerDashboard';
 import { CartPage } from './pages/customer/CartPage';
+import { WishlistPage } from './pages/customer/WishlistPage';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { UserManagementPage } from './pages/admin/UserManagementPage';
 
@@ -42,6 +43,14 @@ function App() {
                   element={
                     <ProtectedRoute allowedRoles={['customer']}>
                       <CartPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/customer/wishlist"
+                  element={
+                    <ProtectedRoute allowedRoles={['customer']}>
+                      <WishlistPage />
                     </ProtectedRoute>
                   }
                 />

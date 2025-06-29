@@ -54,6 +54,14 @@ const translations = {
     'home.shoppingCartDesc': 'Real-time cart management with automatic stock updates and reservation.',
     'home.userManagement': 'User Management',
     'home.userManagementDesc': 'Role-based access control with secure authentication and user profiles.',
+    'home.browseBooks': 'Browse Books',
+    'home.dashboard': 'Dashboard',
+    'home.addBook': 'Add Book',
+    'home.viewReports': 'View Reports',
+    'home.exploreBooks': 'Explore Books',
+    'home.cart': 'Cart',
+    'home.wishlist': 'Wishlist',
+    'home.stockLogs': 'Stock Logs',
     
     // Admin Dashboard
     'admin.dashboard': 'Admin Dashboard',
@@ -104,12 +112,24 @@ const translations = {
     'cart.total': 'Total',
     'cart.checkout': 'Checkout',
     
+    // Wishlist
+    'wishlist.title': 'My Wishlist',
+    'wishlist.empty': 'Your wishlist is empty',
+    'wishlist.startBrowsing': 'Start browsing to add books to your wishlist',
+    'wishlist.itemsInWishlist': 'item(s) in your wishlist',
+    'wishlist.loadingWishlist': 'Loading wishlist...',
+    'wishlist.addedToWishlist': 'Added to wishlist',
+    'wishlist.removedFromWishlist': 'Removed from wishlist',
+    'wishlist.alreadyInWishlist': 'Already in wishlist',
+    
     // Book Card
     'book.addToCart': 'Add to Cart',
     'book.viewDetails': 'View Details',
     'book.edit': 'Edit Book',
     'book.delete': 'Delete Book',
     'book.updateStock': 'Update Stock',
+    'book.addToWishlist': 'Add to Wishlist',
+    'book.removeFromWishlist': 'Remove from Wishlist',
     'book.left': 'left',
     
     // Book Detail Modal
@@ -161,6 +181,14 @@ const translations = {
     'home.shoppingCartDesc': 'Manajemen keranjang real-time dengan pembaruan stok otomatis dan reservasi.',
     'home.userManagement': 'Manajemen Pengguna',
     'home.userManagementDesc': 'Kontrol akses berbasis peran dengan autentikasi aman dan profil pengguna.',
+    'home.browseBooks': 'Jelajahi Buku',
+    'home.dashboard': 'Dasbor',
+    'home.addBook': 'Tambah Buku',
+    'home.viewReports': 'Lihat Laporan',
+    'home.exploreBooks': 'Jelajahi Buku',
+    'home.cart': 'Keranjang',
+    'home.wishlist': 'Daftar Keinginan',
+    'home.stockLogs': 'Log Stok',
     
     // Admin Dashboard
     'admin.dashboard': 'Dasbor Admin',
@@ -211,12 +239,24 @@ const translations = {
     'cart.total': 'Total',
     'cart.checkout': 'Checkout',
     
+    // Wishlist
+    'wishlist.title': 'Daftar Keinginan Saya',
+    'wishlist.empty': 'Daftar keinginan Anda kosong',
+    'wishlist.startBrowsing': 'Mulai menjelajah untuk menambahkan buku ke daftar keinginan Anda',
+    'wishlist.itemsInWishlist': 'item di daftar keinginan Anda',
+    'wishlist.loadingWishlist': 'Memuat daftar keinginan...',
+    'wishlist.addedToWishlist': 'Ditambahkan ke daftar keinginan',
+    'wishlist.removedFromWishlist': 'Dihapus dari daftar keinginan',
+    'wishlist.alreadyInWishlist': 'Sudah ada di daftar keinginan',
+    
     // Book Card
     'book.addToCart': 'Tambah ke Keranjang',
     'book.viewDetails': 'Lihat Detail',
     'book.edit': 'Edit Buku',
     'book.delete': 'Hapus Buku',
     'book.updateStock': 'Update Stok',
+    'book.addToWishlist': 'Tambah ke Daftar Keinginan',
+    'book.removeFromWishlist': 'Hapus dari Daftar Keinginan',
     'book.left': 'tersisa',
     
     // Book Detail Modal
