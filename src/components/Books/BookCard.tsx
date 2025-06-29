@@ -1,5 +1,5 @@
 import React from "react";
-import { ShoppingCart, Edit, Trash2, Package } from "lucide-react";
+import { ShoppingCart, Edit, Trash2, Package, Eye } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useCart } from "../../hooks/useCart";
 import type { Database } from "../../lib/supabase";
@@ -12,6 +12,7 @@ interface BookCardProps {
   onEdit?: (book: Book) => void;
   onDelete?: (book: Book) => void;
   onUpdateStock?: (book: Book) => void;
+  onViewDetail?: (book: Book) => void;
 }
 
 export function BookCard({
@@ -19,6 +20,7 @@ export function BookCard({
   onEdit,
   onDelete,
   onUpdateStock,
+  onViewDetail,
 }: BookCardProps) {
   const { profile } = useAuth();
   const { addToCart } = useCart();
@@ -93,6 +95,17 @@ export function BookCard({
 
         {/* Actions */}
         <div className="flex items-center space-x-2">
+          {/* View Detail Button - Always visible */}
+          {onViewDetail && (
+            <button
+              onClick={() => onViewDetail(book)}
+              className="flex items-center justify-center p-2 text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
+              title="View Details"
+            >
+              <Eye className="w-4 h-4" />
+            </button>
+          )}
+
           {profile?.role === "customer" && (
             <button
               onClick={handleAddToCart}
