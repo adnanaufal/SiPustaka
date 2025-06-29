@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Plus, BookOpen, Users, DollarSign, TrendingUp, Eye, UserPlus, FileText } from 'lucide-react';
 import { Layout } from '../../components/Layout/Layout';
 import { BookCard } from '../../components/Books/BookCard';
@@ -63,13 +64,17 @@ export function AdminDashboard() {
       ).slice(0, 4) || [];
 
       // Get best sellers (books with most transaction items)
+      // Note: This is a simplified approach. For larger datasets, a database function would be better.
       const { data: bestSellersData } = await supabase
         .from('transaction_items')
         .select('book_id, quantity, books!inner(*)')
         .order('quantity', { ascending: false })
         .limit(4);
+      
+      const bestSellers: Book[] = bestSellersData
+        ?.map(item => item.books as Book)
+        .filter((book): book is Book => book !== null) || [];
 
-      const bestSellers = bestSellersData?.map(item => item.books as Book) || [];
 
       setStats({
         totalBooks: booksData?.length || 0,
@@ -156,6 +161,7 @@ export function AdminDashboard() {
 
       toast.success('Book updated successfully');
       setEditingBook(null);
+      setShowBookForm(false);
       fetchDashboardData();
     } catch (error) {
       console.error('Error updating book:', error);
@@ -166,7 +172,7 @@ export function AdminDashboard() {
   };
 
   const handleDeleteBook = async (book: Book) => {
-    if (!confirm('Are you sure you want to delete this book?')) return;
+    if (!window.confirm('Are you sure you want to delete this book?')) return;
 
     try {
       const { error } = await supabase
@@ -289,14 +295,14 @@ export function AdminDashboard() {
                 Quick Actions
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <button className="flex items-center space-x-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors duration-200">
+                <button onClick={() => setShowBookForm(true)} className="flex items-center space-x-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors duration-200">
                   <Plus className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   <span className="text-blue-600 dark:text-blue-400 font-medium">Add Book</span>
                 </button>
-                <button className="flex items-center space-x-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors duration-200">
+                <Link to="/admin/users" className="flex items-center space-x-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors duration-200">
                   <UserPlus className="w-5 h-5 text-green-600 dark:text-green-400" />
-                  <span className="text-green-600 dark:text-green-400 font-medium">Add User</span>
-                </button>
+                  <span className="text-green-600 dark:text-green-400 font-medium">Manage Users</span>
+                </Link>
                 <button className="flex items-center space-x-3 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors duration-200">
                   <Eye className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                   <span className="text-purple-600 dark:text-purple-400 font-medium">View Reports</span>
@@ -318,8 +324,8 @@ export function AdminDashboard() {
                   <BookCard
                     key={book.id}
                     book={book}
-                    onEdit={setEditingBook}
-                    onDelete={handleDeleteBook}
+                    onEdit={() => setEditingBook(book)}
+                    onDelete={() => handleDeleteBook(book)}
                   />
                 ))}
               </div>
@@ -335,8 +341,8 @@ export function AdminDashboard() {
                   <BookCard
                     key={book.id}
                     book={book}
-                    onEdit={setEditingBook}
-                    onDelete={handleDeleteBook}
+                    onEdit={() => setEditingBook(book)}
+                    onDelete={() => handleDeleteBook(book)}
                   />
                 ))}
               </div>
