@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, ShoppingCart, Sun, Moon, LogOut, User, Settings, Globe, Search, Filter, ListFilter, Heart } from 'lucide-react';
+import { BookOpen, ShoppingCart, Sun, Moon, LogOut, User, Settings, Globe, Search, Filter, ArrowUpDown, Heart } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -72,12 +72,6 @@ export function Header() {
     }
   };
 
-  const toggleLanguage = () => {
-    const newLanguage = language === 'en' ? 'id' : 'en';
-    setLanguage(newLanguage);
-    setShowLanguageDropdown(false);
-  };
-
   const getFlagUrl = (lang: 'en' | 'id') => {
     return lang === 'en' 
       ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg/1200px-Flag_of_the_United_Kingdom_%283-5%29.svg.png'
@@ -139,100 +133,110 @@ export function Header() {
             </Link>
           </div>
 
-          {/* Center - Search Bar (visible on medium screens and up) */}
+          {/* Center - Integrated Search Bar (visible on medium screens and up) */}
           {user && (
-            <div className="hidden md:flex items-center space-x-2 flex-1 max-w-2xl mx-8">
-              {/* Search Input */}
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <div className="hidden md:flex items-center flex-1 max-w-2xl mx-8">
+              <div className="relative flex items-center w-full border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 overflow-hidden">
+                {/* Search Icon */}
+                <div className="pl-3 pr-2">
+                  <Search className="w-4 h-4 text-gray-400" />
+                </div>
+
+                {/* Search Input */}
                 <input
                   type="text"
                   placeholder={t('customer.searchBooks')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-1 py-2 px-2 text-sm bg-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
                 />
-              </div>
 
-              {/* Category Filter */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
-                  className="flex items-center space-x-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200"
-                >
-                  <Filter className="w-4 h-4" />
-                  <span className="hidden lg:inline">{selectedCategory || t('customer.allCategories')}</span>
-                </button>
+                {/* Category Filter Button */}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+                    className="group flex items-center px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200 border-l border-gray-200 dark:border-gray-600"
+                    title={selectedCategory || t('customer.allCategories')}
+                  >
+                    <Filter className="w-4 h-4" />
+                    <span className="ml-2 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                      {selectedCategory || t('customer.allCategories')}
+                    </span>
+                  </button>
 
-                {showCategoryDropdown && (
-                  <div className="absolute top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50">
-                    <button
-                      onClick={() => {
-                        setSelectedCategory('');
-                        setShowCategoryDropdown(false);
-                      }}
-                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 ${
-                        !selectedCategory ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
-                      }`}
-                    >
-                      {t('customer.allCategories')}
-                    </button>
-                    {categories.map((category) => (
+                  {showCategoryDropdown && (
+                    <div className="absolute top-full right-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50">
                       <button
-                        key={category}
                         onClick={() => {
-                          setSelectedCategory(category);
+                          setSelectedCategory('');
                           setShowCategoryDropdown(false);
                         }}
                         className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 ${
-                          selectedCategory === category ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
+                          !selectedCategory ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
                         }`}
                       >
-                        {category}
+                        {t('customer.allCategories')}
                       </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+                      {categories.map((category) => (
+                        <button
+                          key={category}
+                          onClick={() => {
+                            setSelectedCategory(category);
+                            setShowCategoryDropdown(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 ${
+                            selectedCategory === category ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
+                          }`}
+                        >
+                          {category}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
-              {/* Sort Filter */}
-              <div className="relative">
+                {/* Sort Filter Button */}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowSortDropdown(!showSortDropdown)}
+                    className="group flex items-center px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200 border-l border-gray-200 dark:border-gray-600"
+                    title={sortOptions.find(opt => opt.value === sortBy)?.label}
+                  >
+                    <ArrowUpDown className="w-4 h-4" />
+                    <span className="ml-2 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                      {sortOptions.find(opt => opt.value === sortBy)?.label}
+                    </span>
+                  </button>
+
+                  {showSortDropdown && (
+                    <div className="absolute top-full right-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50">
+                      {sortOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => {
+                            setSortBy(option.value);
+                            setShowSortDropdown(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 ${
+                            sortBy === option.value ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Search Button */}
                 <button
-                  onClick={() => setShowSortDropdown(!showSortDropdown)}
-                  className="flex items-center space-x-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200"
+                  onClick={handleSearch}
+                  className="px-3 py-2 bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200 border-l border-blue-600"
                 >
-                  <ListFilter className="w-4 h-4" />
-                  <span className="hidden lg:inline">{sortOptions.find(opt => opt.value === sortBy)?.label}</span>
+                  <Search className="w-4 h-4" />
                 </button>
-
-                {showSortDropdown && (
-                  <div className="absolute top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50">
-                    {sortOptions.map((option) => (
-                      <button
-                        key={option.value}
-                        onClick={() => {
-                          setSortBy(option.value);
-                          setShowSortDropdown(false);
-                        }}
-                        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 ${
-                          sortBy === option.value ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
-                        }`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
               </div>
-
-              {/* Search Button */}
-              <button
-                onClick={handleSearch}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-              >
-                <Search className="w-4 h-4" />
-              </button>
             </div>
           )}
 
