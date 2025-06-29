@@ -1,27 +1,57 @@
-import React, { useState } from 'react';
-import { X, Upload } from 'lucide-react';
-import type { Database } from '../../lib/supabase';
+import React, { useState, useEffect } from "react";
+import { X } from "lucide-react";
+import type { Database } from "../../lib/supabase";
+import { formatRupiah, parseRupiah } from "../../utils/formatters"; // Impor fungsi
 
-type Book = Database['public']['Tables']['books']['Row'];
+type Book = Database["public"]["Tables"]["books"]["Row"];
 
 interface BookFormProps {
   book?: Book;
-  onSubmit: (bookData: Omit<Book, 'id' | 'created_at' | 'updated_at'>) => void;
+  onSubmit: (bookData: Omit<Book, "id" | "created_at" | "updated_at">) => void;
   onClose: () => void;
   loading?: boolean;
 }
 
 export function BookForm({ book, onSubmit, onClose, loading }: BookFormProps) {
   const [formData, setFormData] = useState({
-    title: book?.title || '',
-    author: book?.author || '',
-    category: book?.category || '',
+    title: book?.title || "",
+    author: book?.author || "",
+    category: book?.category || "",
     year: book?.year || new Date().getFullYear(),
     price: book?.price || 0,
     stock: book?.stock || 0,
-    cover_image: book?.cover_image || '',
-    description: book?.description || '',
+    cover_image: book?.cover_image || "",
+    description: book?.description || "",
   });
+
+  const [displayPrice, setDisplayPrice] = useState(
+    book ? formatRupiah(book.price) : ""
+  );
+
+  useEffect(() => {
+    // Sinkronisasi form jika ada buku yang dipilih untuk diedit
+    if (book) {
+      setFormData({
+        title: book.title,
+        author: book.author,
+        category: book.category,
+        year: book.year,
+        price: book.price,
+        stock: book.stock,
+        cover_image: book.cover_image || "",
+        description: book.description || "",
+      });
+      setDisplayPrice(formatRupiah(book.price));
+    }
+  }, [book]);
+
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value;
+    const numericValue = parseRupiah(rawValue);
+
+    setFormData({ ...formData, price: numericValue });
+    setDisplayPrice(formatRupiah(numericValue));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,18 +59,9 @@ export function BookForm({ book, onSubmit, onClose, loading }: BookFormProps) {
   };
 
   const categories = [
-    'Fiction',
-    'Non-Fiction',
-    'Mystery',
-    'Romance',
-    'Science Fiction',
-    'Fantasy',
-    'Biography',
-    'History',
-    'Self-Help',
-    'Technology',
-    'Business',
-    'Education',
+    "Fiction", "Non-Fiction", "Mystery", "Romance", "Science Fiction",
+    "Fantasy", "Biography", "History", "Self-Help", "Technology",
+    "Business", "Education",
   ];
 
   return (
@@ -48,7 +69,7 @@ export function BookForm({ book, onSubmit, onClose, loading }: BookFormProps) {
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            {book ? 'Edit Book' : 'Add New Book'}
+            {book ? "Edit Book" : "Add New Book"}
           </h2>
           <button
             onClick={onClose}
@@ -67,8 +88,10 @@ export function BookForm({ book, onSubmit, onClose, loading }: BookFormProps) {
               <input
                 type="text"
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
                 required
               />
             </div>
@@ -80,8 +103,10 @@ export function BookForm({ book, onSubmit, onClose, loading }: BookFormProps) {
               <input
                 type="text"
                 value={formData.author}
-                onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) =>
+                  setFormData({ ...formData, author: e.target.value })
+                }
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
                 required
               />
             </div>
@@ -92,8 +117,10 @@ export function BookForm({ book, onSubmit, onClose, loading }: BookFormProps) {
               </label>
               <select
                 value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) =>
+                  setFormData({ ...formData, category: e.target.value })
+                }
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
                 required
               >
                 <option value="">Select Category</option>
@@ -112,25 +139,26 @@ export function BookForm({ book, onSubmit, onClose, loading }: BookFormProps) {
               <input
                 type="number"
                 value={formData.year}
-                onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })}
+                onChange={(e) =>
+                  setFormData({ ...formData, year: parseInt(e.target.value) })
+                }
                 min="1000"
                 max={new Date().getFullYear() + 10}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
                 required
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Price ($)
+                Price
               </label>
               <input
-                type="number"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
-                min="0"
-                step="0.01"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                type="text" // Diubah menjadi text
+                value={displayPrice}
+                onChange={handlePriceChange}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
+                placeholder="Rp 0"
                 required
               />
             </div>
@@ -142,9 +170,11 @@ export function BookForm({ book, onSubmit, onClose, loading }: BookFormProps) {
               <input
                 type="number"
                 value={formData.stock}
-                onChange={(e) => setFormData({ ...formData, stock: parseInt(e.target.value) })}
+                onChange={(e) =>
+                  setFormData({ ...formData, stock: parseInt(e.target.value) || 0 })
+                }
                 min="0"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
                 required
               />
             </div>
@@ -157,8 +187,10 @@ export function BookForm({ book, onSubmit, onClose, loading }: BookFormProps) {
             <input
               type="url"
               value={formData.cover_image}
-              onChange={(e) => setFormData({ ...formData, cover_image: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) =>
+                setFormData({ ...formData, cover_image: e.target.value })
+              }
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
               placeholder="https://example.com/book-cover.jpg"
             />
           </div>
@@ -169,9 +201,11 @@ export function BookForm({ book, onSubmit, onClose, loading }: BookFormProps) {
             </label>
             <textarea
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
               placeholder="Book description..."
               required
             />
@@ -190,7 +224,7 @@ export function BookForm({ book, onSubmit, onClose, loading }: BookFormProps) {
               disabled={loading}
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
             >
-              {loading ? 'Saving...' : (book ? 'Update Book' : 'Add Book')}
+              {loading ? "Saving..." : book ? "Update Book" : "Add Book"}
             </button>
           </div>
         </form>
