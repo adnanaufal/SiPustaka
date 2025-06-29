@@ -56,7 +56,7 @@ export function HomePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Link
               to="/customer"
-              className="flex items-center space-x-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors duration-200"
+              className="flex items-center space-x-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:scale-105 hover:shadow-lg transition-all duration-200"
             >
               <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               <span className="text-blue-600 dark:text-blue-400 font-medium">
@@ -65,20 +65,20 @@ export function HomePage() {
             </Link>
             <Link
               to="/admin"
-              className="flex items-center space-x-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors duration-200"
+              className="flex items-center space-x-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 hover:scale-105 hover:shadow-lg transition-all duration-200"
             >
               <Users className="w-5 h-5 text-green-600 dark:text-green-400" />
               <span className="text-green-600 dark:text-green-400 font-medium">
                 {t('home.dashboard')}
               </span>
             </Link>
-            <button className="flex items-center space-x-3 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors duration-200">
+            <button className="flex items-center space-x-3 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 hover:scale-105 hover:shadow-lg transition-all duration-200">
               <Plus className="w-5 h-5 text-purple-600 dark:text-purple-400" />
               <span className="text-purple-600 dark:text-purple-400 font-medium">
                 {t('home.addBook')}
               </span>
             </button>
-            <button className="flex items-center space-x-3 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors duration-200">
+            <button className="flex items-center space-x-3 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/30 hover:scale-105 hover:shadow-lg transition-all duration-200">
               <Eye className="w-5 h-5 text-orange-600 dark:text-orange-400" />
               <span className="text-orange-600 dark:text-orange-400 font-medium">
                 {t('home.viewReports')}
@@ -92,7 +92,7 @@ export function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link
               to="/customer"
-              className="flex items-center space-x-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors duration-200"
+              className="flex items-center space-x-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:scale-105 hover:shadow-lg transition-all duration-200"
             >
               <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               <span className="text-blue-600 dark:text-blue-400 font-medium">
@@ -101,7 +101,7 @@ export function HomePage() {
             </Link>
             <Link
               to="/customer/cart"
-              className="flex items-center space-x-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors duration-200"
+              className="flex items-center space-x-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 hover:scale-105 hover:shadow-lg transition-all duration-200"
             >
               <ShoppingCart className="w-5 h-5 text-green-600 dark:text-green-400" />
               <span className="text-green-600 dark:text-green-400 font-medium">
@@ -110,7 +110,7 @@ export function HomePage() {
             </Link>
             <Link
               to="/customer/wishlist"
-              className="flex items-center space-x-3 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors duration-200"
+              className="flex items-center space-x-3 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 hover:scale-105 hover:shadow-lg transition-all duration-200"
             >
               <Heart className="w-5 h-5 text-red-600 dark:text-red-400" />
               <span className="text-red-600 dark:text-red-400 font-medium">
@@ -123,13 +123,13 @@ export function HomePage() {
       case 'cashier':
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <button className="flex items-center space-x-3 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors duration-200">
+            <button className="flex items-center space-x-3 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 hover:scale-105 hover:shadow-lg transition-all duration-200">
               <Eye className="w-5 h-5 text-purple-600 dark:text-purple-400" />
               <span className="text-purple-600 dark:text-purple-400 font-medium">
                 {t('home.viewReports')}
               </span>
             </button>
-            <button className="flex items-center space-x-3 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors duration-200">
+            <button className="flex items-center space-x-3 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/30 hover:scale-105 hover:shadow-lg transition-all duration-200">
               <FileText className="w-5 h-5 text-orange-600 dark:text-orange-400" />
               <span className="text-orange-600 dark:text-orange-400 font-medium">
                 {t('home.stockLogs')}
@@ -150,7 +150,7 @@ export function HomePage() {
         <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white py-20">
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
+            <div className="text-center animate-fade-in">
               <h1 className="text-4xl md:text-6xl font-bold mb-6">
                 {profile ? t('home.welcomeUser', { name: profile.full_name }) : t('home.welcome')}
               </h1>
@@ -167,13 +167,13 @@ export function HomePage() {
                 <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
                   <Link
                     to="/auth/signup"
-                    className="inline-flex items-center px-8 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors duration-200"
+                    className="inline-flex items-center px-8 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 hover:scale-105 hover:shadow-lg transition-all duration-200"
                   >
                     {t('home.getStarted')}
                   </Link>
                   <Link
                     to="/auth/login"
-                    className="inline-flex items-center px-8 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-blue-600 transition-colors duration-200"
+                    className="inline-flex items-center px-8 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-blue-600 hover:scale-105 hover:shadow-lg transition-all duration-200"
                   >
                     {t('home.signIn')}
                   </Link>
@@ -239,7 +239,7 @@ export function HomePage() {
 
               <div className="grid md:grid-cols-3 gap-8">
                 {/* Admin */}
-                <div className="bg-white dark:bg-gray-700 rounded-xl shadow-lg p-8 text-center hover:shadow-xl transition-shadow duration-300">
+                <div className="bg-white dark:bg-gray-700 rounded-xl shadow-lg p-8 text-center hover:shadow-xl hover:scale-105 transition-all duration-300">
                   <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Shield className="w-8 h-8 text-red-600 dark:text-red-400" />
                   </div>
@@ -251,14 +251,14 @@ export function HomePage() {
                   </p>
                   <Link
                     to="/auth/login?role=admin"
-                    className="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
+                    className="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 hover:scale-105 hover:shadow-lg transition-all duration-200"
                   >
                     {t('home.adminLogin')}
                   </Link>
                 </div>
 
                 {/* Cashier */}
-                <div className="bg-white dark:bg-gray-700 rounded-xl shadow-lg p-8 text-center hover:shadow-xl transition-shadow duration-300">
+                <div className="bg-white dark:bg-gray-700 rounded-xl shadow-lg p-8 text-center hover:shadow-xl hover:scale-105 transition-all duration-300">
                   <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Users className="w-8 h-8 text-green-600 dark:text-green-400" />
                   </div>
@@ -270,14 +270,14 @@ export function HomePage() {
                   </p>
                   <Link
                     to="/auth/login?role=cashier"
-                    className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
+                    className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 hover:scale-105 hover:shadow-lg transition-all duration-200"
                   >
                     {t('home.cashierLogin')}
                   </Link>
                 </div>
 
                 {/* Customer */}
-                <div className="bg-white dark:bg-gray-700 rounded-xl shadow-lg p-8 text-center hover:shadow-xl transition-shadow duration-300">
+                <div className="bg-white dark:bg-gray-700 rounded-xl shadow-lg p-8 text-center hover:shadow-xl hover:scale-105 transition-all duration-300">
                   <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
                     <ShoppingCart className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                   </div>
@@ -289,7 +289,7 @@ export function HomePage() {
                   </p>
                   <Link
                     to="/auth/login"
-                    className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                    className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-200"
                   >
                     {t('home.customerLogin')}
                   </Link>
