@@ -107,6 +107,9 @@ const translations = {
     // Book Card
     'book.addToCart': 'Add to Cart',
     'book.viewDetails': 'View Details',
+    'book.edit': 'Edit Book',
+    'book.delete': 'Delete Book',
+    'book.updateStock': 'Update Stock',
     'book.left': 'left',
     
     // Book Detail Modal
@@ -211,6 +214,9 @@ const translations = {
     // Book Card
     'book.addToCart': 'Tambah ke Keranjang',
     'book.viewDetails': 'Lihat Detail',
+    'book.edit': 'Edit Buku',
+    'book.delete': 'Hapus Buku',
+    'book.updateStock': 'Update Stok',
     'book.left': 'tersisa',
     
     // Book Detail Modal

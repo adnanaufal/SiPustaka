@@ -101,10 +101,13 @@ export function BookCard({
           {onViewDetail && (
             <button
               onClick={() => onViewDetail(book)}
-              className="flex items-center justify-center p-2 text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
+              className="group/btn flex items-center justify-center w-8 h-8 text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 hover:w-auto hover:px-3 overflow-hidden"
               title={t('book.viewDetails')}
             >
-              <Eye className="w-4 h-4" />
+              <Eye className="w-4 h-4 group-hover/btn:hidden" />
+              <span className="hidden group-hover/btn:block text-sm font-medium whitespace-nowrap">
+                {t('book.viewDetails')}
+              </span>
             </button>
           )}
 
@@ -125,25 +128,34 @@ export function BookCard({
                 <>
                   <button
                     onClick={() => onEdit?.(book)}
-                    className="flex items-center justify-center p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors duration-200"
+                    className="group/btn flex items-center justify-center w-8 h-8 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200 hover:w-auto hover:px-3 overflow-hidden"
                   >
-                    <Edit className="w-4 h-4" />
+                    <Edit className="w-4 h-4 group-hover/btn:hidden" />
+                    <span className="hidden group-hover/btn:block text-sm font-medium whitespace-nowrap">
+                      {t('book.edit')}
+                    </span>
                   </button>
 
                   <button
                     onClick={() => onDelete?.(book)}
-                    className="flex items-center justify-center p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors duration-200"
+                    className="group/btn flex items-center justify-center w-8 h-8 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200 hover:w-auto hover:px-3 overflow-hidden"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4 group-hover/btn:hidden" />
+                    <span className="hidden group-hover/btn:block text-sm font-medium whitespace-nowrap">
+                      {t('book.delete')}
+                    </span>
                   </button>
                 </>
               )}
 
               <button
                 onClick={() => onUpdateStock?.(book)}
-                className="flex items-center justify-center p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors duration-200"
+                className="group/btn flex items-center justify-center w-8 h-8 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-all duration-200 hover:w-auto hover:px-3 overflow-hidden"
               >
-                <Package className="w-4 h-4" />
+                <Package className="w-4 h-4 group-hover/btn:hidden" />
+                <span className="hidden group-hover/btn:block text-sm font-medium whitespace-nowrap">
+                  {t('book.updateStock')}
+                </span>
               </button>
             </>
           )}
