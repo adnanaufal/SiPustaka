@@ -62,9 +62,13 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 group">
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg group-hover:from-blue-600 group-hover:to-blue-700 transition-all duration-200">
-              <BookOpen className="w-6 h-6 text-white" />
+          <Link to="/" className="flex items-center space-x-3 group">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl group-hover:from-blue-600 group-hover:to-blue-700 transition-all duration-200 shadow-lg">
+              <img 
+                src="/LogoSiPustaka.png" 
+                alt="SiPustaka Logo" 
+                className="h-10 w-auto object-contain"
+              />
             </div>
             <span className="text-xl font-bold text-gray-900 dark:text-white">
               SiPustaka
