@@ -66,14 +66,13 @@ export function useWishlist() {
 
     try {
       // Check if item already exists in wishlist
-      const { data: existingItem } = await supabase
+      const { data: existingItems } = await supabase
         .from('wishlist_items')
         .select('*')
         .eq('user_id', user.id)
-        .eq('book_id', bookId)
-        .single();
+        .eq('book_id', bookId);
 
-      if (existingItem) {
+      if (existingItems && existingItems.length > 0) {
         toast.error('Item already in wishlist');
         return;
       }
