@@ -23,6 +23,9 @@ const translations = {
     'header.signOut': 'Sign Out',
     'header.signIn': 'Sign In',
     'header.signUp': 'Sign Up',
+    'header.cart': 'Cart',
+    'header.wishlist': 'Wishlist',
+    'header.settings': 'Settings',
     
     // HomePage
     'home.welcome': 'Welcome to SiPustaka',
@@ -150,6 +153,9 @@ const translations = {
     'header.signOut': 'Keluar',
     'header.signIn': 'Masuk',
     'header.signUp': 'Daftar',
+    'header.cart': 'Keranjang',
+    'header.wishlist': 'Daftar Keinginan',
+    'header.settings': 'Pengaturan',
     
     // HomePage
     'home.welcome': 'Selamat Datang di SiPustaka',
