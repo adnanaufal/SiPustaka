@@ -49,8 +49,8 @@ export function Header() {
 
   const getFlagUrl = (lang: 'en' | 'id') => {
     return lang === 'en' 
-      ? 'https://flagcdn.com/w20/gb.svg'
-      : 'https://flagcdn.com/w20/id.svg';
+      ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg/1200px-Flag_of_the_United_Kingdom_%283-5%29.svg.png'
+      : 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Flag_of_Indonesia_%28physical_version%29.svg/1200px-Flag_of_Indonesia_%28physical_version%29.svg.png';
   };
 
   const getLanguageName = (lang: 'en' | 'id') => {
