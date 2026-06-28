@@ -41,13 +41,13 @@ export function Header() {
     }`;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 bg-white/80 dark:bg-primary-950/80 backdrop-blur-lg border-b border-primary-200/50 dark:border-primary-800/50">
+    <header className="fixed top-0 left-0 right-0 z-40 bg-white/40 dark:bg-black/30 backdrop-blur-2xl border-b border-white/10 dark:border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <img src="/logo.png" alt="SiPustaka" className="h-8 object-contain dark:hidden" />
-            <img src="/logo-white.png" alt="SiPustaka" className="h-8 object-contain hidden dark:block" />
+            <img src="/logo.png" alt="SiPustaka" className="h-10 object-contain dark:hidden" />
+            <img src="/logo-white.png" alt="SiPustaka" className="h-10 object-contain hidden dark:block" />
           </Link>
 
           {/* Desktop Nav */}

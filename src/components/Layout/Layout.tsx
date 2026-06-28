@@ -9,7 +9,7 @@ export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen warm-gradient">
       <Header />
-      <main className="pt-16">{children}</main>
+      <main className="pt-20">{children}</main>
     </div>
   );
 }
