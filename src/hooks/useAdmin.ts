@@ -75,6 +75,24 @@ export function useAdmin() {
     await fetchAllUsers();
   };
 
+  const createUser = async (payload: { email: string; password?: string; full_name: string; role: string }) => {
+    const { data, error } = await supabase.functions.invoke('manage-users', {
+      body: { action: 'create', ...payload },
+    });
+    if (error) throw error;
+    if (data.error) throw new Error(data.error);
+    await fetchAllUsers();
+  };
+
+  const deleteUser = async (userId: string) => {
+    const { data, error } = await supabase.functions.invoke('manage-users', {
+      body: { action: 'delete', userId },
+    });
+    if (error) throw error;
+    if (data.error) throw new Error(data.error);
+    await fetchAllUsers();
+  };
+
   const fetchStockLogs = useCallback(async (bookId?: string) => {
     try {
       let query = supabase
@@ -139,6 +157,8 @@ export function useAdmin() {
     fetchDashboardStats,
     fetchAllUsers,
     updateUserRole,
+    createUser,
+    deleteUser,
     fetchStockLogs,
     fetchRecentOrders,
     updateOrderStatus,
