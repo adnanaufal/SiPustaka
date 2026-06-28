@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      target: production
+      args:
+        - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+        - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+        - VITE_MIDTRANS_CLIENT_KEY=${VITE_MIDTRANS_CLIENT_KEY}
+        - VITE_RAJAONGKIR_API_KEY=${VITE_RAJAONGKIR_API_KEY}
+    ports:
+      - "80:80"
+    env_file:
+      - .env
+    restart: unless-stopped
