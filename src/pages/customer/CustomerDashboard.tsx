@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ShoppingCart } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Layout } from '../../components/Layout/Layout';
 import { BookCard } from '../../components/Books/BookCard';
 import { BookDetailModal } from '../../components/Books/BookDetailModal';
@@ -22,6 +22,12 @@ export function CustomerDashboard() {
   const [category, setCategory] = useState('');
   const [sort, setSort] = useState<SortOption>('newest');
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+  const navigate = useNavigate();
+
+  const handleBuyNow = async (bookId: string) => {
+    await addToCart(bookId);
+    navigate('/customer/checkout');
+  };
 
   const applyFilters = useCallback(() => {
     fetchBooks({ search, category, sort });
@@ -83,6 +89,7 @@ export function CustomerDashboard() {
                 key={book.id}
                 book={book}
                 onAddToCart={() => addToCart(book.id)}
+                onBuyNow={() => handleBuyNow(book.id)}
                 onToggleWishlist={() => toggleWishlist(book.id)}
                 onViewDetails={() => setSelectedBook(book)}
                 isInWishlist={isInWishlist(book.id)}
@@ -97,6 +104,7 @@ export function CustomerDashboard() {
           isOpen={!!selectedBook}
           onClose={() => setSelectedBook(null)}
           onAddToCart={() => { if (selectedBook) { addToCart(selectedBook.id); setSelectedBook(null); } }}
+          onBuyNow={() => { if (selectedBook) { handleBuyNow(selectedBook.id); setSelectedBook(null); } }}
           onToggleWishlist={() => { if (selectedBook) toggleWishlist(selectedBook.id); }}
           isInWishlist={selectedBook ? isInWishlist(selectedBook.id) : false}
         />

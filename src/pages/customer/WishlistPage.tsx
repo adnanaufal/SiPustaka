@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Heart, ShoppingCart } from 'lucide-react';
 import { Layout } from '../../components/Layout/Layout';
 import { LoadingSpinner } from '../../components/Common/LoadingSpinner';
@@ -13,6 +13,12 @@ export function WishlistPage() {
   const { wishlistItems, loading, removeFromWishlist } = useWishlist();
   const { addToCart } = useCart();
   const { t } = useLanguage();
+  const navigate = useNavigate();
+
+  const handleBuyNow = async (bookId: string) => {
+    await addToCart(bookId);
+    navigate('/customer/checkout');
+  };
 
   if (loading) return <Layout><LoadingSpinner text={t('wishlist.loadingWishlist')} /></Layout>;
 
@@ -40,6 +46,7 @@ export function WishlistPage() {
                 key={item.id}
                 book={item.book}
                 onAddToCart={() => addToCart(item.book_id)}
+                onBuyNow={() => handleBuyNow(item.book_id)}
                 onToggleWishlist={() => removeFromWishlist(item.book_id)}
                 isInWishlist={true}
               />

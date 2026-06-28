@@ -8,6 +8,7 @@ import { Badge } from '../Common/Badge';
 interface BookCardProps {
   book: Book;
   onAddToCart?: () => void;
+  onBuyNow?: () => void;
   onToggleWishlist?: () => void;
   onViewDetails?: () => void;
   isInWishlist?: boolean;
@@ -19,6 +20,7 @@ interface BookCardProps {
 export function BookCard({
   book,
   onAddToCart,
+  onBuyNow,
   onToggleWishlist,
   onViewDetails,
   isInWishlist = false,
@@ -114,13 +116,25 @@ export function BookCard({
             </div>
           ) : (
             onAddToCart && (
-              <button
-                onClick={onAddToCart}
-                disabled={book.stock === 0}
-                className="w-full btn-secondary !py-2 text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <ShoppingCart className="h-4 w-4" /> {t('book.addToCart')}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={onAddToCart}
+                  disabled={book.stock === 0}
+                  className="btn-outline !p-2 text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title={t('book.addToCart')}
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                </button>
+                {onBuyNow && (
+                  <button
+                    onClick={onBuyNow}
+                    disabled={book.stock === 0}
+                    className="flex-1 btn-primary text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {t('book.buyNow')}
+                  </button>
+                )}
+              </div>
             )
           )}
         </div>

@@ -10,6 +10,7 @@ interface BookDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddToCart?: () => void;
+  onBuyNow?: () => void;
   onToggleWishlist?: () => void;
   isInWishlist?: boolean;
 }
@@ -19,6 +20,7 @@ export function BookDetailModal({
   isOpen,
   onClose,
   onAddToCart,
+  onBuyNow,
   onToggleWishlist,
   isInWishlist = false,
 }: BookDetailModalProps) {
@@ -96,9 +98,19 @@ export function BookDetailModal({
                 <button
                   onClick={onAddToCart}
                   disabled={book.stock === 0}
-                  className="flex-1 btn-secondary flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="flex-1 btn-outline flex items-center justify-center gap-2 disabled:opacity-50"
+                  title={t('book.addToCart')}
                 >
-                  <ShoppingCart className="h-5 w-5" /> {t('book.addToCart')}
+                  <ShoppingCart className="h-5 w-5" />
+                </button>
+              )}
+              {onBuyNow && (
+                <button
+                  onClick={onBuyNow}
+                  disabled={book.stock === 0}
+                  className="flex-[2] btn-secondary flex items-center justify-center gap-2 disabled:opacity-50 font-medium"
+                >
+                  {t('book.buyNow')}
                 </button>
               )}
               {onToggleWishlist && (

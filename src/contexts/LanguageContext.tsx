@@ -132,6 +132,7 @@ const translations: Record<string, Record<string, string>> = {
 
     // Book
     'book.addToCart': 'Tambah ke Keranjang',
+    'book.buyNow': 'Beli Sekarang',
     'book.viewDetails': 'Lihat Detail',
     'book.edit': 'Edit Buku',
     'book.delete': 'Hapus Buku',
@@ -392,6 +393,7 @@ const translations: Record<string, Record<string, string>> = {
 
     // Book
     'book.addToCart': 'Add to Cart',
+    'book.buyNow': 'Buy Now',
     'book.viewDetails': 'View Details',
     'book.edit': 'Edit Book',
     'book.delete': 'Delete Book',

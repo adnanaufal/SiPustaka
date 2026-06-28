@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   BookOpen, ShoppingCart, Users, ArrowRight,
   MapPin, Phone, Clock, Shield, Star
@@ -23,6 +23,16 @@ export function HomePage() {
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { storeLocations } = useStoreLocations();
+  const navigate = useNavigate();
+
+  const handleBuyNow = async (bookId: string) => {
+    if (!user) {
+      navigate('/auth/login');
+      return;
+    }
+    await addToCart(bookId);
+    navigate('/customer/checkout');
+  };
 
   const newArrivals = books.slice(0, 4);
 
@@ -112,6 +122,7 @@ export function HomePage() {
                 key={book.id}
                 book={book}
                 onAddToCart={user ? () => addToCart(book.id) : undefined}
+                onBuyNow={user ? () => handleBuyNow(book.id) : undefined}
                 onToggleWishlist={user ? () => toggleWishlist(book.id) : undefined}
                 isInWishlist={isInWishlist(book.id)}
               />

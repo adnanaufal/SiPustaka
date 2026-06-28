@@ -18,8 +18,9 @@ export function CheckoutPage() {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const { user } = useAuth();
-  const { cartItems, cartTotal, totalWeight, clearCart } = useCart();
+  const { cartItems, cartTotal, totalWeight, clearCart, updateQuantity } = useCart();
   const { storeLocations, loading: loadingStores } = useStoreLocations();
+
   const {
     checkoutState,
     addresses,
@@ -591,15 +592,49 @@ export function CheckoutPage() {
                 {t('cart.orderSummary')}
               </h2>
 
-              <div className="space-y-4 max-h-40 overflow-y-auto pr-1">
+              <div className="space-y-4 max-h-60 overflow-y-auto pr-1">
                 {cartItems.map((item) => (
-                  <div key={item.id} className="flex justify-between text-sm">
-                    <span className="text-primary-600 dark:text-primary-400 truncate mr-3">
-                      {item.book?.title} × {item.quantity}
-                    </span>
-                    <span className="text-primary-700 dark:text-primary-300 font-medium whitespace-nowrap">
-                      {formatCurrency((item.book?.price || 0) * item.quantity)}
-                    </span>
+                  <div key={item.id} className="flex flex-col gap-1 border-b border-primary-100 dark:border-primary-800 pb-3 last:border-0 last:pb-0">
+                    <div className="flex justify-between items-start gap-2">
+                      <span className="text-primary-800 dark:text-primary-100 text-sm font-medium line-clamp-1 flex-1">
+                        {item.book?.title}
+                      </span>
+                      <span className="text-primary-700 dark:text-secondary-400 font-bold text-sm whitespace-nowrap">
+                        {formatCurrency((item.book?.price || 0) * item.quantity)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between mt-0.5">
+                      <span className="text-xs text-primary-400">
+                        {formatCurrency(item.book?.price || 0)} / buku
+                      </span>
+                      
+                      {/* Quantity Selector */}
+                      <div className="flex items-center border border-primary-200 dark:border-primary-700 rounded-lg overflow-hidden bg-surface-50 dark:bg-primary-800">
+                        <button
+                          type="button"
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          className="px-2 py-0.5 text-primary-600 hover:bg-primary-100 dark:hover:bg-primary-700 text-xs font-bold transition-colors"
+                        >
+                          -
+                        </button>
+                        <span className="px-2 font-mono text-xs font-bold text-primary-800 dark:text-primary-200">
+                          {item.quantity}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (item.book && item.quantity >= item.book.stock) {
+                              toast.error(t('cart.stockExceeded'));
+                              return;
+                            }
+                            updateQuantity(item.id, item.quantity + 1);
+                          }}
+                          className="px-2 py-0.5 text-primary-600 hover:bg-primary-100 dark:hover:bg-primary-700 text-xs font-bold transition-colors"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
