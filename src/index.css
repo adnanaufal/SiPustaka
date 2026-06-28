@@ -1,14 +1,6 @@
 @font-face {
-  font-family: 'Rhythmic Regal';
-  src: url('/fonts/Rhythmic-Regal.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Arnhem Bold';
-  src: url('/fonts/Arnhem-Bold.ttf') format('truetype');
+  font-family: 'Dirtyline';
+  src: url('/fonts/Dirtyline.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -148,15 +140,32 @@
     box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.55), 0 15px 25px -10px rgba(0, 0, 0, 0.35);
   }
 
-  .hero-title-hover {
-    font-family: 'Rhythmic Regal', Georgia, serif;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    cursor: default;
+  .radial-solid-text {
+    position: relative;
+    color: #ffffff;
+    display: inline-block;
+    width: 100%;
   }
 
-  .hero-title-hover:hover {
+  .radial-solid-text-active {
+    mask-image: radial-gradient(circle 100px at var(--mouse-x) var(--mouse-y), transparent 99%, black 100%);
+    -webkit-mask-image: radial-gradient(circle 100px at var(--mouse-x) var(--mouse-y), transparent 99%, black 100%);
+  }
+
+  .radial-hollow-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     color: transparent !important;
     -webkit-text-stroke: 1.5px #ffffff;
     text-stroke: 1.5px #ffffff;
+    opacity: var(--mouse-opacity, 0);
+    pointer-events: none;
+    mask-image: radial-gradient(circle 100px at var(--mouse-x) var(--mouse-y), black 99%, transparent 100%);
+    -webkit-mask-image: radial-gradient(circle 100px at var(--mouse-x) var(--mouse-y), black 99%, transparent 100%);
+    transition: opacity 0.3s ease;
+    display: inline-block;
   }
 }

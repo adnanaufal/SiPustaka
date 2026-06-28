@@ -84,8 +84,8 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Arnhem Bold', 'Poppins', 'Inter', 'sans-serif'],
-        serif: ['Rhythmic Regal', 'Georgia', 'serif'],
+        sans: ['Dirtyline', 'Poppins', 'Inter', 'sans-serif'],
+        serif: ['Dirtyline', 'Georgia', 'serif'],
       },
       spacing: {
         '18': '4.5rem',

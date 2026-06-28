@@ -75,6 +75,22 @@ export function HomePage() {
 
   const newArrivals = books.slice(0, 4);
 
+  const welcomeText = user && profile
+    ? t('home.welcomeUser', { name: profile.full_name.split(' ')[0] })
+    : t('home.welcome');
+
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const [mousePos, setMousePos] = useState({ x: -1000, y: -1000 });
+  const [isMouseOver, setIsMouseOver] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!headingRef.current) return;
+    const rect = headingRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setMousePos({ x, y });
+  };
+
   return (
     <Layout>
       {/* Fullscreen Video Hero Section */}
@@ -97,10 +113,26 @@ export function HomePage() {
             <div className="flex items-center justify-center md:justify-start gap-3 mb-6">
               <img src="/logo-white.png" alt="SiPustaka" className="h-10 object-contain drop-shadow-lg" />
             </div>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-white leading-tight mb-6 drop-shadow-md hero-title-hover tracking-wide">
-              {user && profile
-                ? t('home.welcomeUser', { name: profile.full_name.split(' ')[0] })
-                : t('home.welcome')}
+            <h1
+              ref={headingRef}
+              onMouseMove={handleMouseMove}
+              onMouseEnter={() => setIsMouseOver(true)}
+              onMouseLeave={() => setIsMouseOver(false)}
+              className="text-5xl md:text-6xl lg:text-7xl font-serif font-bold leading-tight mb-6 drop-shadow-md tracking-wide relative inline-block select-none w-full animate-in"
+              style={{
+                '--mouse-x': `${mousePos.x}px`,
+                '--mouse-y': `${mousePos.y}px`,
+                '--mouse-opacity': isMouseOver ? 1 : 0
+              } as React.CSSProperties}
+            >
+              {/* Solid Text (base layer) */}
+              <span className={`radial-solid-text ${isMouseOver ? 'radial-solid-text-active' : ''}`}>
+                {welcomeText}
+              </span>
+              {/* Hollow Text (reveal layer) */}
+              <span className="radial-hollow-text">
+                {welcomeText}
+              </span>
             </h1>
             <p className="text-lg text-white/90 leading-relaxed mb-8 max-w-xl drop-shadow">
               {t('home.subtitle')}
