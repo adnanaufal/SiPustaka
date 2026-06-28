@@ -1,3 +1,19 @@
+@font-face {
+  font-family: 'Rhythmic Regal';
+  src: url('/fonts/Rhythmic-Regal.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Arnhem Bold';
+  src: url('/fonts/Arnhem-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -130,5 +146,17 @@
 
   .dark .shadow-glow {
     box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.55), 0 15px 25px -10px rgba(0, 0, 0, 0.35);
+  }
+
+  .hero-title-hover {
+    font-family: 'Rhythmic Regal', Georgia, serif;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: default;
+  }
+
+  .hero-title-hover:hover {
+    color: transparent !important;
+    -webkit-text-stroke: 1.5px #ffffff;
+    text-stroke: 1.5px #ffffff;
   }
 }

@@ -97,7 +97,7 @@ export function HomePage() {
             <div className="flex items-center justify-center md:justify-start gap-3 mb-6">
               <img src="/logo-white.png" alt="SiPustaka" className="h-10 object-contain drop-shadow-lg" />
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white leading-tight mb-6 drop-shadow-md">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-white leading-tight mb-6 drop-shadow-md hero-title-hover tracking-wide">
               {user && profile
                 ? t('home.welcomeUser', { name: profile.full_name.split(' ')[0] })
                 : t('home.welcome')}

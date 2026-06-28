@@ -84,8 +84,8 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Poppins', 'Inter', 'system-ui', 'sans-serif'],
-        serif: ['Playfair Display', 'Georgia', 'serif'],
+        sans: ['Arnhem Bold', 'Poppins', 'Inter', 'sans-serif'],
+        serif: ['Rhythmic Regal', 'Georgia', 'serif'],
       },
       spacing: {
         '18': '4.5rem',
