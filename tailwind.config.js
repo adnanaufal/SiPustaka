@@ -84,8 +84,8 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Dirtyline', 'Poppins', 'Inter', 'sans-serif'],
-        serif: ['Dirtyline', 'Georgia', 'serif'],
+        sans: ['Plus Jakarta Sans', 'Poppins', 'Inter', 'sans-serif'],
+        serif: ['Outfit', 'Georgia', 'serif'],
       },
       spacing: {
         '18': '4.5rem',
