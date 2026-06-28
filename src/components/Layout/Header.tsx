@@ -46,12 +46,8 @@ export function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="p-1.5 bg-primary-600 rounded-lg group-hover:bg-primary-700 transition-colors">
-              <BookOpen className="h-5 w-5 text-white" />
-            </div>
-            <span className="font-serif font-bold text-xl text-primary-800 dark:text-primary-100">
-              SiPustaka
-            </span>
+            <img src="/logo.png" alt="SiPustaka" className="h-8 object-contain dark:hidden" />
+            <img src="/logo-white.png" alt="SiPustaka" className="h-8 object-contain hidden dark:block" />
           </Link>
 
           {/* Desktop Nav */}

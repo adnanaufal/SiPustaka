@@ -14,10 +14,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
         </div>
         <div className="relative z-10 flex flex-col justify-center px-16 text-white">
           <div className="flex items-center gap-3 mb-8">
-            <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl">
-              <BookOpen className="h-10 w-10" />
-            </div>
-            <span className="font-serif text-4xl font-bold">SiPustaka</span>
+            <img src="/logo-white.png" alt="SiPustaka" className="h-14 object-contain" />
           </div>
           <h1 className="text-3xl font-serif font-bold mb-4 leading-tight">
             Dunia Literasi<br />di Ujung Jari Anda

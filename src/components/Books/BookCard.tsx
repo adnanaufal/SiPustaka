@@ -38,7 +38,7 @@ export function BookCard({
     : t('book.inStock');
 
   return (
-    <div className="group glass-card overflow-hidden hover:shadow-large transition-all duration-300 hover:-translate-y-1">
+    <div className="group glass-card overflow-hidden hover:shadow-glow hover:-translate-y-2 hover:scale-[1.03] transition-all duration-500 ease-out border border-transparent hover:border-primary-400/20 dark:hover:border-primary-700/30">
       {/* Cover Image */}
       <div className="relative aspect-[3/4] bg-primary-100 dark:bg-primary-800 overflow-hidden">
         {book.cover_image ? (

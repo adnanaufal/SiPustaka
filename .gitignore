@@ -39,3 +39,5 @@ pnpm-debug.log*
 .vercel
 scratch/
 .agents/
+/*.mp4
+/*.png
